@@ -11,6 +11,15 @@ fn test_random_u8() {
 }
 
 #[test]
+fn test_random_u64() {
+    for _ in 0..100000 {
+        let answ = random_u64();
+        // println!("{:?}", answ);
+        assert!(answ.is_some());
+    }
+}
+
+#[test]
 fn test_random_range() {
     let mut found0 = false;
     let mut found100 = false;
