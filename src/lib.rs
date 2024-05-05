@@ -1,14 +1,57 @@
+//! # Tyche: A Rust Randomness Library
+//!
+//! The name Tyche is inspired by the Greek goddess of fortune, Tyche (Τύχη). In Greek mythology, Tyche personified luck, fortune, and fate.
+//! Just like the goddess was often depicted blindfolded, emphasizing the impartiality of fate, Tyche the library strives to deliver unpredictable and unbiased random numbers.
+//!
+//! This project was tested and developed on linux, but should / could work on MacOS. No windows
+//! support at the moment.
+//!
+//! ## Function examples:
+//!
+//! For a detailed explanation of a function, please refer to it's dedicated documentation page.
+//!
+//! ```
+//! use tyche::prelude::*;
+//!
+//! fn main() {
+//!     let random_number8: u8 = random().unwrap();
+//!     println!("Generated random u8: {}", random_number8);
+//!    
+//!     let random_number32: u32 = random_u32().unwrap();
+//!     println!("Generated random u32: {}", random_number32);
+//!     
+//!     let random_number64 = random_u64();
+//!     println!("{:?}", random_number64);
+//!     assert!(random_number64.is_some());
+//! 
+//!     let chosen_element = random_from_range(0, 100).unwrap();
+//!     println!("Chosen element {chosen_element}, in range 0-100");
+//!
+//!     let collection = (0..100).collect::<Vec<usize>>();
+//!     let random_index = random_index(collection.len()).unwrap();
+//!     println!("Chosen index {}; Number at index {}", random_index, collection[random_index]);
+//! 
+//!     let random_ceiling = random_with_ceiling(100);
+//!     println!("The random number between 0 and {} is: {}", n, random_ceiling.unwrap());
+//!     assert!(random_ceiling.is_some());
+//!
+//!     let random_floor = random_with_floor(0);
+//!     let max_usize = usize::MAX;
+//!     println!("The random number between {} and {} is: {}", max_usize, n, random_floor.unwrap());
+//!     assert!(random_floor.is_some());
+//! }
+//! ```
+
 #[cfg(test)]
 mod tests;
 
 pub mod prelude {
     use std::{fs::File, io::Read};
     
-    /// Generates a cryptographically secure pseudorandom u8. Takes no arguments.
+    /// Generates a cryptographically secure pseudorandom u8. Leveraging the inbuilt Linux or MacOSX CSPRING.
     ///
     /// ## Returns:
-    /// Returns `None` if the CSPRNG has no entropy available or no access to the CSPRNG was
-    /// possible.
+    /// Returns `None` if the CSPRNG has no entropy available or no access to the CSPRNG was possible. This is highly unlikely, but possible.
     /// Returns `Some(u8)` otherwise.
     ///
     /// ## Example:
@@ -35,10 +78,11 @@ pub mod prelude {
     }
 
     /// Generates a cryptographically secure pseudorandom u32 by combining 4 random u8 numbers and
-    /// combining their bytes. The little Endian is used for that here.
+    /// combining their bytes. The little Endian is used for that here, mainly because it is better
+    /// optimised for x86 and ARM processors.
     ///
     /// ## Returns
-    /// `None` if the CSPRNG has no entropy available or there is no access to it.
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
     /// `Some(u32)` with the random u32 number.
     ///
     /// ## Example:
@@ -66,11 +110,46 @@ pub mod prelude {
         }
     }
 
+    /// Generates a cryptographically secure pseudorandom u64 by combining 8 random u8 numbers and
+    /// combining their bytes. The little Endian is used for that here, mainly because it is better
+    /// optimised for x86 and ARM processors.
+    ///
+    /// Please note that this function needs a 64bit system for obvious reasons.
+    ///
+    /// ## Returns
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
+    /// `Some(u64)` with the random u64 number.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_u64;
+    ///
+    /// fn main() {
+    ///   let random_number: u64 = random_u64().unwrap();
+    ///   println!("Generated random u64: {}", random_number);
+    /// }
+    /// ```
+    pub fn random_u64() -> Option<u64> {
+        let rng = File::open("/dev/urandom");
+        if rng.is_ok() {
+            let mut buffer = [0u8; 8];
+            let temp = rng.unwrap().read_exact(&mut buffer);
+            if temp.is_ok() {
+                let out = u64::from_le_bytes(buffer);
+                Some(out)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
     /// Call with the start and end of the range (both `usize`).
     /// The range is inclusive on both ends.
     /// 
     /// ## Returns
-    /// Will return `None` if start is bigger than end, or if random() fails.
+    /// Will return `None` if start is bigger than end, or if random() fails. This is highly unlikely, but possible.
     /// Will return `Some(usize)` wrapping a number inside the given range.
     ///
     /// ## Example:
@@ -101,7 +180,7 @@ pub mod prelude {
     /// it.
     ///
     /// ## Returns
-    /// `None` if `collection_length` is smaller than 1, or `random_u32()` fails.
+    /// `None` if `collection_length` is smaller than 1, or `random_u32()` fails. This is highly unlikely, but possible.
     /// `Some(usize)` containing the index otherwise.
     ///
     /// ## Example:
@@ -125,7 +204,7 @@ pub mod prelude {
     /// Computes a random number between 0 and the `ceiling` argument.
     ///
     /// ## Returns
-    /// `None` if `random_u32()` fails to generate.
+    /// `None` if `random_u32()` fails to generate. This is highly unlikely, but possible.
     /// `Some(usize)` containing the number otherwise.
     ///
     /// ## Example:
@@ -148,7 +227,7 @@ pub mod prelude {
     /// Computes a random number between `usize::MAX` and the `floor` argument.
     ///
     /// ## Returns
-    /// `None` if `random_u32()` fails to generate.
+    /// `None` if `random_u32()` fails to generate. This is highly unlikely, but possible.
     /// `Some(usize)` containing the number otherwise.
     ///
     /// ## Example:
