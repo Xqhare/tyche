@@ -34,6 +34,22 @@ pub mod prelude {
         }
     }
 
+    /// Generates a cryptographically secure pseudorandom u32 by combining 4 random u8 numbers and
+    /// combining their bytes. The little Endian is used for that here.
+    ///
+    /// ## Returns
+    /// `None` if the CSPRNG has no entropy available or there is no access to it.
+    /// `Some(u32)` with the random u32 number.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_u32;
+    ///
+    /// fn main() {
+    ///   let random_number: u32 = random_u32().unwrap();
+    ///   println!("Generated random u32: {}", random_number);
+    /// }
+    /// ```
     pub fn random_u32() -> Option<u32> {
         let rng = File::open("/dev/urandom");
         if rng.is_ok() {
@@ -106,11 +122,48 @@ pub mod prelude {
         }
     }
 
+    /// Computes a random number between 0 and the `ceiling` argument.
+    ///
+    /// ## Returns
+    /// `None` if `random_u32()` fails to generate.
+    /// `Some(usize)` containing the number otherwise.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_with_ceiling;
+    ///
+    /// fn main() {
+    ///    for n in 100000..200000  {
+    ///         let answ = random_with_ceiling(n);
+    ///         println!("The random number between 0 and {} is: {}", n, answ.unwrap());
+    ///         assert!(answ.is_some());
+    ///    }
+    /// }
+    /// ```
     pub fn random_with_ceiling(ceiling: usize) -> Option<usize> {
         let min_usize = usize::MIN;
         random_from_range(min_usize, ceiling)
     }
 
+    /// Computes a random number between `usize::MAX` and the `floor` argument.
+    ///
+    /// ## Returns
+    /// `None` if `random_u32()` fails to generate.
+    /// `Some(usize)` containing the number otherwise.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_with_ceiling;
+    ///
+    /// fn main() {
+    ///    for n in 0..100000  {
+    ///         let answ = random_with_floor(n);
+    ///         let max_usize = usize::MAX;
+    ///         println!("The random number between {} and {} is: {}", max_usize, n, answ.unwrap());
+    ///         assert!(answ.is_some());
+    ///    }
+    /// }
+    /// ```
     pub fn random_with_floor(floor: usize) -> Option<usize> {
         let max_usize = usize::MAX;
         random_from_range(floor, max_usize)
