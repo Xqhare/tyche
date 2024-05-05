@@ -60,3 +60,5 @@ fn main() {
   println!("Chosen element {chosen_element}, in range 0-100");
 }
 ```
+
+For more info please refer to the documentation.
