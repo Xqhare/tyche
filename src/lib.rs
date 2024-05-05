@@ -36,9 +36,10 @@ pub mod prelude {
 
 
     /// Call with the start and end of the range (both `usize`).
+    /// The range is inclusive on both ends.
     /// 
     /// ## Returns
-    /// Will return `None` if end is bigger than start, or if random() fails.
+    /// Will return `None` if start is bigger than end, or if random() fails.
     /// Will return `Some` wrapping a number inside the given range.
     ///
     /// ## Example:
@@ -51,12 +52,11 @@ pub mod prelude {
     /// }
     /// ```
     pub fn random_from_range(start: usize, end: usize) -> Option<usize> {
-        let rng = File::open("/dev/urandom");
-        if rng.is_ok() && start < end {
-            let range_size = end.saturating_sub(start).saturating_add(1);
-            let seed = random();
-            if seed.is_some() {
-                let random_index = seed.unwrap() as usize % range_size;
+        if start < end {
+            let range_size = (end - start).saturating_add(1);
+            let rng = random();
+            if rng.is_some() {
+                let random_index = rng.unwrap() as usize % range_size;
                 Some(start + random_index)
             } else {
                 None
@@ -64,6 +64,18 @@ pub mod prelude {
         } else {
             None
         }
+    }
+
+    pub fn random_index(collection_length: usize) -> usize {
+        todo!()
+    }
+
+    pub fn random_with_ceiling(ceiling: usize) -> usize {
+        let min_usize = usize::MIN;
+    }
+
+    pub fn random_with_floor(floor: usize) -> usize {
+        let max_usize = usize::MAX;
     }
 }
 
