@@ -1,4 +1,5 @@
 use crate::prelude::*;
+// Run with `cargo test -- --nocapture` for printout
 
 #[test]
 fn test_random_u8() {
