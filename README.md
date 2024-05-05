@@ -18,7 +18,7 @@ It is also a recursive acronym:
 
 ## Features
 
-- Linux only
+- Tested and developed on Linux only, could work on all UNIX systems like MacOS however.
 - Secure Randomness: Tyche utilizes cryptographically secure pseudorandom number generators (CSPRNGs) to ensure the generated randomness is unpredictable and statistically sound.
 - Ease of Use: Tyche provides a user-friendly API with intuitive functions for generating random values of different data types.
 - Test driven development, meaning 100% test coverage, guaranteeing stability.
@@ -50,7 +50,7 @@ fn main() {
 }
 ```
 
-The probably most used and usefull function is `random_from_range(start, end)`.
+The probably most used and usefull function is `random_from_range(start, end)`. It takes in a start and end `usize` and returns a number in between them. The range is inclusive on both sides.
 
 ```rust
 use tyche::prelude::random_from_range;
