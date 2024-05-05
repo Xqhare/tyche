@@ -51,11 +51,20 @@ fn test_random_ceiling() {
 #[test]
 fn test_random_index() {
     let collection = (0..100).collect::<Vec<usize>>();
+    let mut found99 = false;
+    let mut found0 = false;
     for _ in 0..100000 {
         let random_index = random_index(collection.len());
         assert!(random_index.is_some());
+        // println!("{:?}", random_index);
         // These two tests test the same thing, I am more comfortable this way though.
         assert!(random_index.unwrap() < 100);
         let _index_test = collection[random_index.unwrap()];
+        if random_index.unwrap() == 0 {
+            found0 = true;
+        } else if random_index.unwrap() == 99 {
+            found99 = true;
+        }
     }
+    assert!(found0 && found99);
 }
