@@ -43,7 +43,7 @@ fn test_random_floor() {
 fn test_random_ceiling() {
     for n in 100000..200000  {
         let answ = random_with_ceiling(n);
-        // println!("{:?}", answ);
+        // println!("The random number between 0 and {} is: {}", n, answ.unwrap());
         assert!(answ.is_some());
     }
 }
