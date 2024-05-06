@@ -3,28 +3,31 @@
 //! The name Tyche is inspired by the Greek goddess of fortune, Tyche (Τύχη). In Greek mythology, Tyche personified luck, fortune, and fate.
 //! Just like the goddess was often depicted blindfolded, emphasizing the impartiality of fate, Tyche the library strives to deliver unpredictable and unbiased random numbers.
 //!
-//! This project was tested and developed on linux, but should / could work on MacOS. No windows
-//! support at the moment.
+//! This project was tested and developed on linux, but should / could work on MacOS. Noone has tried yet.
+//!
+//! No windows support at the moment.
 //!
 //! ## Function examples:
 //!
 //! For a detailed explanation of a function, please refer to it's dedicated documentation page.
 //!
+//! You can copy and run this code to see all functions of tyche in action!
+//!
 //! ```
 //! use tyche::prelude::*;
 //!
 //! fn main() {
-//!     let random_number8: u8 = random_u8().unwrap();
-//!     println!("Generated random u8: {}", random_number8);
+//!     let random_number_u8: u8 = random_u8().unwrap();
+//!     println!("Generated random u8: {}", random_number_u8);
 //!
-//!     let random_number16: u16 = random_u16().unwrap();
-//!     println!("Generated random u16: {}", random_number16);
+//!     let random_number_u16: u16 = random_u16().unwrap();
+//!     println!("Generated random u_u16: {}", random_number_u16);
 //!    
-//!     let random_number32: u32 = random_u32().unwrap();
-//!     println!("Generated random u32: {}", random_number32);
+//!     let random_number_u32: u32 = random_u32().unwrap();
+//!     println!("Generated random u_u32: {}", random_number_u32);
 //!     
-//!     let random_number64: u64 = random_u64().unwrap();
-//!     println!("Generated random u64: {}", random_number64);
+//!     let random_number_u64: u64 = random_u64().unwrap();
+//!     println!("Generated random u64: {}", random_number_u64);
 //!
 //!     let random_number_i8: i8 = random_i8().unwrap();
 //!     println!("Generated random i8: {}", random_number_i8);
@@ -97,7 +100,7 @@ pub mod prelude {
         }
     }
 
-    /// Generates a cryptographically secure pseudorandom u16 by combining 2 random u8 numbers and
+    /// Generates a cryptographically secure pseudorandom u16 by casting 2 random bytes as a u16,
     /// combining their bytes. The little Endian is used for that here, mainly because it is better
     /// optimised for x86 and ARM processors.
     ///
@@ -130,7 +133,8 @@ pub mod prelude {
         }
     }
 
-    /// Generates a cryptographically secure pseudorandom u32 by combining 4 random u8 numbers and
+    
+    /// Generates a cryptographically secure pseudorandom u32 by casting 4 random bytes as a u32,
     /// combining their bytes. The little Endian is used for that here, mainly because it is better
     /// optimised for x86 and ARM processors.
     ///
@@ -163,8 +167,9 @@ pub mod prelude {
         }
     }
 
-    /// Generates a cryptographically secure pseudorandom u64 by combining 8 random u8 numbers and
-    /// combining their bytes. The little Endian is used for that here, mainly because it is better
+    /// Generates a cryptographically secure pseudorandom u64 by casting 8 random bytes as a u64,
+    /// combining their bytes.
+    /// The little Endian is used for that here, mainly because it is better
     /// optimised for x86 and ARM processors.
     ///
     /// Please note that this function needs a 64bit system for obvious reasons.
@@ -198,8 +203,7 @@ pub mod prelude {
         }
     }
 
-    /// Generates a cryptographically secure pseudorandom i8 by combining 8 random u8 numbers and
-    /// combining their bytes. The little Endian is used for that here, mainly because it is better
+    /// Generates a cryptographically secure pseudorandom i8 by casting a random byte as a i8. The little Endian is used for that here, mainly because it is better
     /// optimised for x86 and ARM processors.
     ///
     /// Please note that this function needs a 64bit system for obvious reasons.
@@ -233,7 +237,7 @@ pub mod prelude {
         }
     }
 
-    /// Generates a cryptographically secure pseudorandom i32 by combining 8 random u8 numbers and
+    /// Generates a cryptographically secure pseudorandom i32 by casting 4 random bytes as a i32,
     /// combining their bytes. The little Endian is used for that here, mainly because it is better
     /// optimised for x86 and ARM processors.
     ///
@@ -268,7 +272,7 @@ pub mod prelude {
         }
     }
 
-    /// Generates a cryptographically secure pseudorandom f32 by combining 4 random u8 numbers and
+    /// Generates a cryptographically secure pseudorandom f32 by casting 4 random bytes as a f32,
     /// combining their bytes. The little Endian is used for that here, mainly because it is better
     /// optimised for x86 and ARM processors.
     ///
@@ -329,8 +333,10 @@ pub mod prelude {
             let temp = rng.unwrap().read_exact(&mut buffer);
             if temp.is_ok() {
                 let mut out: String = Default::default();
-                let tt: Vec<_> = buffer.bytes().map(|c| String::from_utf8(vec![c.unwrap()])).collect();
-                for entry in tt {
+                // This is probably the most black magic, unsafe and non standart way of doing
+                // someting I have ever done.
+                let black_magic: Vec<_> = buffer.bytes().map(|c| String::from_utf8(vec![c.unwrap()])).collect();
+                for entry in black_magic {
                     if entry.is_ok() {
                         out.push_str(entry.unwrap().as_str());
                         break;
@@ -348,6 +354,8 @@ pub mod prelude {
     /// Call with the start and end of the range (both `usize`).
     /// The range is inclusive on both ends.
     /// 
+    /// Uses u32 rng, for u64rng please use `random_from_u64range`.
+    ///
     /// ## Returns
     /// Will return `None` if start is bigger than end, or if random() fails. This is highly unlikely, but possible.
     /// Will return `Some(usize)` wrapping a number inside the given range.
@@ -367,6 +375,39 @@ pub mod prelude {
             let rng = random_u32();
             if rng.is_some() {
                 let random_index = rng.unwrap() as usize % range_size;
+                Some(start + random_index)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
+    /// Call with the start and end of the range (both `u64`).
+    /// The range is inclusive on both ends.
+    /// 
+    /// 64bit systems only.
+    ///
+    /// ## Returns
+    /// Will return `None` if start is bigger than end, or if random() fails. This is highly unlikely, but possible.
+    /// Will return `Some(u64)` wrapping a number inside the given range.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_from_u64range;
+    ///
+    /// fn main() {
+    ///     let chosen_element = random_from_u64range(0, 100).unwrap();
+    ///     println!("Chosen element {chosen_element}, in range 0-100");
+    /// }
+    /// ```
+    pub fn random_from_u64range(start: u64, end: u64) -> Option<u64> {
+        if start < end {
+            let range_size = (end - start).saturating_add(1);
+            let rng = random_u64();
+            if rng.is_some() {
+                let random_index = rng.unwrap() % range_size;
                 Some(start + random_index)
             } else {
                 None
@@ -420,8 +461,7 @@ pub mod prelude {
     }
 
     /// Call with the start and end of the range (both `i32`).
-    /// The range is inclusive on start, and never quite reaches end (At least it was never
-    /// observed during testing).
+    /// The range is inclusive on both ends.
     /// 
     /// ## Returns
     /// Will return `None` if start is bigger than end, or if random_i32() fails. This is highly unlikely, but possible.
