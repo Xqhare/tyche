@@ -68,6 +68,28 @@ fn test_random_range() {
 }
 
 #[test]
+fn test_random_f32range() {
+    let mut found0_1 = false;
+    let mut found100_1 = false;
+    //let mut tmpvec: Vec<f32> = Default::default();
+    for _ in 0..1000000 {
+        let answ = random_from_f32range(0.1, 100.1);
+        //println!("{:?}", answ);
+        assert!(answ.is_some());
+        if !found0_1 && answ.unwrap() == 0.1 {
+            found0_1 = true;
+        } 
+        if !found100_1 && answ.unwrap() > 100.09 {
+            found100_1 = true;
+        }
+        assert!(answ.unwrap() >= 0.1 && answ.unwrap() <= 100.1);
+        //tmpvec.push(answ.unwrap());
+    }
+    //println!("{:?}", tmpvec.into_iter().reduce(f32::max).unwrap());
+    assert!(found0_1 && found100_1);
+}
+
+#[test]
 fn test_random_floor() {
     for n in 0..1000000 {
         let answ = random_with_floor(n);
