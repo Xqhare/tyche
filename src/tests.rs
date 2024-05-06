@@ -2,6 +2,16 @@ use crate::prelude::*;
 // Run with `cargo test -- --nocapture` for printout
 
 #[test]
+fn test_random_str() {
+    for _ in 0..1000000 {
+        let tmp = random_string();
+        // println!("{:?}", tmp);
+        assert!(tmp.is_some());
+    }
+    
+}
+
+#[test]
 fn test_random_u8() {
     for _ in 0..1000000 {
         let answ = random_u8();
