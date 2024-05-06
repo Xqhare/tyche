@@ -20,12 +20,12 @@ Tyche is not a replacement for a crate like [rand](https://crates.io/crates/rand
 - random u32
 - random u64
 - random f32
+- random String
 - random in range of 2 usizes
 - random in range of 2 f32
 - random index
 - random usize with ceiling
 - random usize with floor
-- random String
 
 ## The Name: Tyche
 
