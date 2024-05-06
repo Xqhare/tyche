@@ -7,6 +7,10 @@
 //!
 //! No windows support at the moment.
 //!
+//! ## Returns
+//!
+//! All functions return a `Option()`. This is because of the random number generator used on the backend. It can run out of entropy, something that is highly unlikely but possible, or the program can not open `/dev/urandom`. If you get a `None` back the second reason is the most likely canditate as I have not encountered one `None` value not caused by this.
+//!
 //! ## Function examples:
 //!
 //! For a detailed explanation of a function, please refer to it's dedicated documentation page.
@@ -44,11 +48,14 @@
 //!     let chosen_element = random_from_range(0, 100).unwrap();
 //!     println!("Chosen element {chosen_element}, in range 0-100");
 //!
-//!     let chosen_element = random_from_f32range(0.1, 100.1).unwrap();
-//!     println!("Chosen element {chosen_element}, in range 0.1-100.1");
+//!     let chosen_element_u64 = random_from_u64range(0, 100).unwrap();
+//!     println!("Chosen element {chosen_element_u64}, in range 0-100");
 //!
-//!     let chosen_element = random_from_i32range(-100, 100).unwrap();
-//!     println!("Chosen element {chosen_element}, in range -100, 100");
+//!     let chosen_element_f32 = random_from_f32range(0.1, 100.1).unwrap();
+//!     println!("Chosen element {chosen_element_f32}, in range 0.1-100.1");
+//!
+//!     let chosen_element_i32 = random_from_i32range(-100, 100).unwrap();
+//!     println!("Chosen element {chosen_element_i32}, in range -100, 100");
 //!
 //!     let collection = (0..100).collect::<Vec<usize>>();
 //!     let random_index = random_index(collection.len()).unwrap();
@@ -71,10 +78,10 @@ mod tests;
 pub mod prelude {
     use std::{fs::File, io::Read, ops::{Sub, Add}};
 
-    /// Generates a cryptographically secure pseudorandom u8. Leveraging the inbuilt Linux or MacOSX CSPRING.
+    /// Generates a cryptographically secure pseudorandom `u8`. Leveraging the inbuilt Linux or MacOSX CSPRING.
     ///
     /// ## Returns:
-    /// Returns `None` if the CSPRNG has no entropy available or no access to the CSPRNG was possible. This is highly unlikely, but possible.
+    /// Returns `None` if the CSPRNG has no entropy available or no access to the CSPRNG was possible. This is highly unlikely, but possible. Most likely the program cannot access `/dev/urandom`.
     /// Returns `Some(u8)` otherwise.
     ///
     /// ## Example:
@@ -100,13 +107,13 @@ pub mod prelude {
         }
     }
 
-    /// Generates a cryptographically secure pseudorandom u16 by casting 2 random bytes as a u16,
+    /// Generates a cryptographically secure pseudorandom `u16` by casting 2 random bytes as a `u16`,
     /// combining their bytes. The little Endian is used for that here, mainly because it is better
     /// optimised for x86 and ARM processors.
     ///
     /// ## Returns
-    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
-    /// `Some(u16)` with the random u16 number.
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible. Most likely the program cannot access `/dev/urandom`.
+    /// `Some(u16)` with the random `u16` number.
     ///
     /// ## Example:
     /// ```
@@ -134,13 +141,13 @@ pub mod prelude {
     }
 
     
-    /// Generates a cryptographically secure pseudorandom u32 by casting 4 random bytes as a u32,
+    /// Generates a cryptographically secure pseudorandom `u32` by casting 4 random bytes as a `u32`,
     /// combining their bytes. The little Endian is used for that here, mainly because it is better
     /// optimised for x86 and ARM processors.
     ///
     /// ## Returns
-    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
-    /// `Some(u32)` with the random u32 number.
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible. Most likely the program cannot access `/dev/urandom`.
+    /// `Some(u32)` with the random `u32` number.
     ///
     /// ## Example:
     /// ```
@@ -167,7 +174,7 @@ pub mod prelude {
         }
     }
 
-    /// Generates a cryptographically secure pseudorandom u64 by casting 8 random bytes as a u64,
+    /// Generates a cryptographically secure pseudorandom `u64` by casting 8 random bytes as a `u64`,
     /// combining their bytes.
     /// The little Endian is used for that here, mainly because it is better
     /// optimised for x86 and ARM processors.
@@ -175,8 +182,8 @@ pub mod prelude {
     /// Please note that this function needs a 64bit system for obvious reasons.
     ///
     /// ## Returns
-    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
-    /// `Some(u64)` with the random u64 number.
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible. Most likely the program cannot access `/dev/urandom`.
+    /// `Some(u64)` with the random `u64` number.
     ///
     /// ## Example:
     /// ```
@@ -203,14 +210,14 @@ pub mod prelude {
         }
     }
 
-    /// Generates a cryptographically secure pseudorandom i8 by casting a random byte as a i8. The little Endian is used for that here, mainly because it is better
+    /// Generates a cryptographically secure pseudorandom `i8` by casting a random byte as a `i8`. The little Endian is used for that here, mainly because it is better
     /// optimised for x86 and ARM processors.
     ///
     /// Please note that this function needs a 64bit system for obvious reasons.
     ///
     /// ## Returns
-    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
-    /// `Some(i8)` with the random i8 number.
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible. Most likely the program cannot access `/dev/urandom`.
+    /// `Some(i8)` with the random `i8` number.
     ///
     /// ## Example:
     /// ```
@@ -237,15 +244,15 @@ pub mod prelude {
         }
     }
 
-    /// Generates a cryptographically secure pseudorandom i32 by casting 4 random bytes as a i32,
+    /// Generates a cryptographically secure pseudorandom `i32` by casting 4 random bytes as a `i32`,
     /// combining their bytes. The little Endian is used for that here, mainly because it is better
     /// optimised for x86 and ARM processors.
     ///
     /// Please note that this function needs a 64bit system for obvious reasons.
     ///
     /// ## Returns
-    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
-    /// `Some(i32)` with the random i32 number.
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible. Most likely the program cannot access `/dev/urandom`.
+    /// `Some(i32)` with the random `i32` number.
     ///
     /// ## Example:
     /// ```
@@ -272,13 +279,13 @@ pub mod prelude {
         }
     }
 
-    /// Generates a cryptographically secure pseudorandom f32 by casting 4 random bytes as a f32,
+    /// Generates a cryptographically secure pseudorandom `f32` by casting 4 random bytes as a `f32`,
     /// combining their bytes. The little Endian is used for that here, mainly because it is better
     /// optimised for x86 and ARM processors.
     ///
     /// ## Returns
-    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
-    /// `Some(f32)` with the random f32 number.
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible. Most likely the program cannot access `/dev/urandom`.
+    /// `Some(f32)` with the random `f32` number.
     ///
     /// ## Example:
     /// ```
@@ -309,13 +316,13 @@ pub mod prelude {
         }
     }
 
-    /// This generates a random character. Because I am mapping random noise as utf8 characters,
+    /// This generates a random character. Because I am mapping random noise as `utf8` characters,
     /// some wierd output is to be expected and will propably be needed to be sanatised. So while this does work, take care if you end up using
     /// it.
     ///
     /// ## Returns
-    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
-    /// `Some(String)` with the random String.
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible. Most likely the program cannot access `/dev/urandom`.
+    /// `Some(String)` with the random `String`.
     ///
     /// ## Example:
     /// ```
@@ -354,10 +361,10 @@ pub mod prelude {
     /// Call with the start and end of the range (both `usize`).
     /// The range is inclusive on both ends.
     /// 
-    /// Uses u32 rng, for u64rng please use `random_from_u64range`.
+    /// Uses a 32bit seeded rng, for 64bit seeded rng please use `random_from_u64range`.
     ///
     /// ## Returns
-    /// Will return `None` if start is bigger than end, or if random() fails. This is highly unlikely, but possible.
+    /// Will return `None` if start is bigger than end, or if the CSPRNG has no entropy available. This is highly unlikely, but possible. Most likely the program cannot access `/dev/urandom`.
     /// Will return `Some(usize)` wrapping a number inside the given range.
     ///
     /// ## Example:
@@ -390,7 +397,7 @@ pub mod prelude {
     /// 64bit systems only.
     ///
     /// ## Returns
-    /// Will return `None` if start is bigger than end, or if random() fails. This is highly unlikely, but possible.
+    /// Will return `None` if start is bigger than end, or if the CSPRNG has no entropy available. This is highly unlikely, but possible. Most likely the program cannot access `/dev/urandom`.
     /// Will return `Some(u64)` wrapping a number inside the given range.
     ///
     /// ## Example:
@@ -422,7 +429,7 @@ pub mod prelude {
     /// observed during testing).
     /// 
     /// ## Returns
-    /// Will return `None` if start is bigger than end, or if random_f32() fails. This is highly unlikely, but possible.
+    /// Will return `None` if start is bigger than end, or if the CSPRNG has no entropy available. This is highly unlikely, but possible. Most likely the program cannot access `/dev/urandom`.
     /// Will return `Some(f32)` wrapping a number inside the given range.
     ///
     /// ## Example:
@@ -464,7 +471,7 @@ pub mod prelude {
     /// The range is inclusive on both ends.
     /// 
     /// ## Returns
-    /// Will return `None` if start is bigger than end, or if random_i32() fails. This is highly unlikely, but possible.
+    /// Will return `None` if start is bigger than end, or if the CSPRNG has no entropy available. This is highly unlikely, but possible. Most likely the program cannot access `/dev/urandom`.
     /// Will return `Some(i32)` wrapping a number inside the given range.
     ///
     /// ## Example:
@@ -501,7 +508,7 @@ pub mod prelude {
     /// it.
     ///
     /// ## Returns
-    /// `None` if `collection_length` is smaller than 1, or `random_u32()` fails. This is highly unlikely, but possible.
+    /// `None` if `collection_length` is smaller than 1, or the CSPRNG has no entropy available. This is highly unlikely, but possible. Most likely the program cannot access `/dev/urandom`.
     /// `Some(usize)` containing the index otherwise.
     ///
     /// ## Example:
@@ -525,7 +532,7 @@ pub mod prelude {
     /// Computes a random number between 0 and the `ceiling` argument.
     ///
     /// ## Returns
-    /// `None` if `random_u32()` fails to generate. This is highly unlikely, but possible.
+    /// `None` if the CSPRNG has no entropy available. This is highly unlikely, but possible. Most likely the program cannot access `/dev/urandom`.
     /// `Some(usize)` containing the number otherwise.
     ///
     /// ## Example:
@@ -548,7 +555,7 @@ pub mod prelude {
     /// Computes a random number between `usize::MAX` and the `floor` argument.
     ///
     /// ## Returns
-    /// `None` if `random_u32()` fails to generate. This is highly unlikely, but possible.
+    /// `None` if if the CSPRNG has no entropy available. This is highly unlikely, but possible. Most likely the program cannot access `/dev/urandom`.
     /// `Some(usize)` containing the number otherwise.
     ///
     /// ## Example:
