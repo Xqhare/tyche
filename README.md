@@ -10,6 +10,7 @@ Tyche is not a replacement for a crate like [rand](https://crates.io/crates/rand
 - Secure Randomness: Tyche utilizes cryptographically secure pseudorandom number generators (CSPRNGs) to ensure the generated randomness is unpredictable and statistically sound.
 - Ease of Use: Tyche provides a user-friendly API with intuitive functions for generating random values of different data types.
 - Test driven development, meaning 100% test coverage, guaranteeing stability.
+- 0 dependencies, all code in one file making it easily auditable and understandable.
 
 ## RNG's
 
