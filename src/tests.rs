@@ -12,6 +12,24 @@ fn test_random_str() {
 }
 
 #[test]
+fn test_random_i8() {
+    for _ in 0..1000000 {
+            let answ = random_i8();
+            // println!("{:?}", answ);
+            assert!(answ.is_some());
+        }
+}
+
+#[test]
+fn test_random_i32() {
+    for _ in 0..1000000 {
+            let answ = random_i32();
+            // println!("{:?}", answ);
+            assert!(answ.is_some());
+        }
+}
+
+#[test]
 fn test_random_u8() {
     for _ in 0..1000000 {
         let answ = random_u8();
@@ -65,6 +83,26 @@ fn test_random_range() {
         assert!(answ.is_some());
     }
     assert!(found0 && found100);
+}
+
+#[test]
+fn test_random_i32range() {
+    let mut found_neg100 = false;
+    let mut found100 = false;
+    for _ in 0..1000000 {
+        let answ = random_from_i32range(-100, 100);
+        // println!("{:?}", answ);
+        if answ.unwrap() == 100 {
+            // println!("DID IT 100!!");
+            found100 = true;
+        }
+        if answ.unwrap() == -100 {
+            // println!("-100! DID IT -100!");
+            found_neg100 = true;
+        }
+        assert!(answ.is_some());
+    }
+    assert!(found_neg100 && found100);
 }
 
 #[test]
