@@ -25,6 +25,12 @@
 //!     
 //!     let random_number64: u64 = random_u64().unwrap();
 //!     println!("Generated random u64: {}", random_number64);
+//!
+//!     let random_number_i8: i8 = random_i8().unwrap();
+//!     println!("Generated random i8: {}", random_number_i8);
+//!
+//!     let random_number_i32: i32 = random_i32().unwrap();
+//!     println!("Generated random i32: {}", random_number_i32);
 //!     
 //!     let random_number_f32: f32 = random_f32().unwrap();
 //!     println!("Generated random f32: {}", random_number_f32);
@@ -37,6 +43,9 @@
 //!
 //!     let chosen_element = random_from_f32range(0.1, 100.1).unwrap();
 //!     println!("Chosen element {chosen_element}, in range 0.1-100.1");
+//!
+//!     let chosen_element = random_from_i32range(-100, 100).unwrap();
+//!     println!("Chosen element {chosen_element}, in range -100, 100");
 //!
 //!     let collection = (0..100).collect::<Vec<usize>>();
 //!     let random_index = random_index(collection.len()).unwrap();
@@ -57,7 +66,7 @@
 mod tests;
 
 pub mod prelude {
-    use std::{fs::File, io::Read, ops::Sub};
+    use std::{fs::File, io::Read, ops::{Sub, Add}};
 
     /// Generates a cryptographically secure pseudorandom u8. Leveraging the inbuilt Linux or MacOSX CSPRING.
     ///
@@ -180,6 +189,76 @@ pub mod prelude {
             let temp = rng.unwrap().read_exact(&mut buffer);
             if temp.is_ok() {
                 let out = u64::from_le_bytes(buffer);
+                Some(out)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
+    /// Generates a cryptographically secure pseudorandom i8 by combining 8 random u8 numbers and
+    /// combining their bytes. The little Endian is used for that here, mainly because it is better
+    /// optimised for x86 and ARM processors.
+    ///
+    /// Please note that this function needs a 64bit system for obvious reasons.
+    ///
+    /// ## Returns
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
+    /// `Some(i8)` with the random i8 number.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_i8;
+    ///
+    /// fn main() {
+    ///   let random_number: i8 = random_i8().unwrap();
+    ///   println!("Generated random i8: {}", random_number);
+    /// }
+    /// ```
+    pub fn random_i8() -> Option<i8> {
+        let rng = File::open("/dev/urandom");
+        if rng.is_ok() {
+            let mut buffer = [0u8; 1];
+            let temp = rng.unwrap().read_exact(&mut buffer);
+            if temp.is_ok() {
+                let out = i8::from_le_bytes(buffer);
+                Some(out)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
+    /// Generates a cryptographically secure pseudorandom i32 by combining 8 random u8 numbers and
+    /// combining their bytes. The little Endian is used for that here, mainly because it is better
+    /// optimised for x86 and ARM processors.
+    ///
+    /// Please note that this function needs a 64bit system for obvious reasons.
+    ///
+    /// ## Returns
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
+    /// `Some(i32)` with the random i32 number.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_i32;
+    ///
+    /// fn main() {
+    ///   let random_number: i32 = random_i32().unwrap();
+    ///   println!("Generated random i32: {}", random_number);
+    /// }
+    /// ```
+    pub fn random_i32() -> Option<i32> {
+        let rng = File::open("/dev/urandom");
+        if rng.is_ok() {
+            let mut buffer = [0u8; 4];
+            let temp = rng.unwrap().read_exact(&mut buffer);
+            if temp.is_ok() {
+                let out = i32::from_le_bytes(buffer);
                 Some(out)
             } else {
                 None
@@ -329,6 +408,44 @@ pub mod prelude {
                     Some(start + random_index)
                 } else {
                     let random_index = (rng.unwrap() * -1.0) % range_size;
+                    Some(start + random_index)
+                }
+                
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
+    /// Call with the start and end of the range (both `i32`).
+    /// The range is inclusive on start, and never quite reaches end (At least it was never
+    /// observed during testing).
+    /// 
+    /// ## Returns
+    /// Will return `None` if start is bigger than end, or if random_i32() fails. This is highly unlikely, but possible.
+    /// Will return `Some(i32)` wrapping a number inside the given range.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_from_i32range;
+    ///
+    /// fn main() {
+    ///     let chosen_element = random_from_i32range(-100, 100).unwrap();
+    ///     println!("Chosen element {chosen_element}, in range -100, 100");
+    /// }
+    /// ```
+    pub fn random_from_i32range(start: i32, end: i32) -> Option<i32> {
+        if start < end {
+            let range_size = end.sub(start).add(1);
+            let rng = random_i32();
+            if rng.is_some() {
+                if rng.unwrap().is_positive() {
+                    let random_index = rng.unwrap() % range_size;
+                    Some(start + random_index)
+                } else {
+                    let random_index = (rng.unwrap() * -1) % range_size;
                     Some(start + random_index)
                 }
                 
