@@ -2,7 +2,11 @@
 
 Tyche (pronounced TY-kee) is a Rust library designed for generating high-quality pseudorandom numbers. It provides various functionalities for different use cases, emphasizing security and ease of use.
 
+Tyche is stable, feature complete (for now) and production ready.
+
 Tyche is not a replacement for a crate like [rand](https://crates.io/crates/rand) but is significantly smaller and more focused on its feature set.
+
+Tyche is a lightweigt wrapper around the inbuilt CSPRNG in UNIX systems, providing convinient access to it with `random_u8()` and converting the entropy into several useful datatypes.
 
 ## Features
 
@@ -12,8 +16,9 @@ Tyche is not a replacement for a crate like [rand](https://crates.io/crates/rand
 - Test driven development, meaning 100% test coverage, guaranteeing stability.
 - 0 dependencies, all code in one file making it easily auditable and understandable.
 - Fully documented with examples - more lines of documentation than lines of code!
+- Several generators, providing unsigned or signed integers, floating point numbers, or characters.
 
-## RNG's
+## Random Number Generators
 
 - random u8
 - random u16
@@ -45,9 +50,25 @@ It is also a recursive acronym:
 - High-Quality
 - Entropy
 
+## License
+
+Tyche is available under the Eclipse Public License 2.0.
+
+But what does that mean? (Explained by a non lawyer)
+- If you change the code and use it somewhere the source code has to be made available.
+- If you simply use it, and keep it in a seperate unchanged file (using it as a dependency for example) you are NOT required to make source code available.
+- Include a copy of the full license text and the original copyright notice.
+- License any derivative works of the library under the same or later version of the EPL.
+- If you commecially distribute a product tat includes an EPL-licensed program, you are required to defend that program's contributers from any lawsuits/legal damages that may arise involving your product.
+
 ## Getting Started
 
 To add Tyche to your project, include it in your Cargo.toml dependencies.
+
+```toml
+tyche = { git = "https://github.com/Xqhare/tyche" }
+```
+
 [Learn more.](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html)
 
 ## Documentation
