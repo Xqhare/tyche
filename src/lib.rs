@@ -35,6 +35,9 @@
 //!     let chosen_element = random_from_range(0, 100).unwrap();
 //!     println!("Chosen element {chosen_element}, in range 0-100");
 //!
+//!     let chosen_element = random_from_f32range(0.1, 100.1).unwrap();
+//!     println!("Chosen element {chosen_element}, in range 0.1-100.1");
+//!
 //!     let collection = (0..100).collect::<Vec<usize>>();
 //!     let random_index = random_index(collection.len()).unwrap();
 //!     println!("Chosen index {}; Number at index {}", random_index, collection[random_index]);
@@ -54,7 +57,7 @@
 mod tests;
 
 pub mod prelude {
-    use std::{fs::File, io::Read};
+    use std::{fs::File, io::Read, ops::Sub};
 
     /// Generates a cryptographically secure pseudorandom f32 by combining 4 random u8 numbers and
     /// combining their bytes. The little Endian is used for that here, mainly because it is better
@@ -80,7 +83,11 @@ pub mod prelude {
             let temp = rng.unwrap().read_exact(&mut buffer);
             if temp.is_ok() {
                 let out = f32::from_le_bytes(buffer);
-                Some(out)
+                if out.is_nan() {
+                    return random_f32();
+                } else {
+                    Some(out)
+                }
             } else {
                 None
             }
@@ -282,6 +289,48 @@ pub mod prelude {
             if rng.is_some() {
                 let random_index = rng.unwrap() as usize % range_size;
                 Some(start + random_index)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
+    /// Call with the start and end of the range (both `f32`).
+    /// The range is inclusive on both ends.
+    /// 
+    /// ## Returns
+    /// Will return `None` if start is bigger than end, or if random_f32() fails. This is highly unlikely, but possible.
+    /// Will return `Some(f32)` wrapping a number inside the given range.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_from_f32range;
+    ///
+    /// fn main() {
+    ///     let chosen_element = random_from_f32range(0.1, 100.1).unwrap();
+    ///     println!("Chosen element {chosen_element}, in range 0.1-100.1");
+    /// }
+    /// ```
+    pub fn random_from_f32range(start: f32, end: f32) -> Option<f32> {
+        if start < end {
+            // I still believe this to have an off by one error, however it is infinitly small
+            // because of f32.
+            // As further reading did not help in the slightes but confirm that floating point
+            // numbers are weird I will have to live with it. It seems to grow towards end, and
+            // never reaching it. I now suspect maths shinanigans.
+            let range_size = end.sub(start);//.add(1.0);
+            let rng = random_f32();
+            if rng.is_some() {
+                if rng.unwrap().is_sign_positive() {
+                    let random_index = rng.unwrap() % range_size;
+                    Some(start + random_index)
+                } else {
+                    let random_index = (rng.unwrap() * -1.0) % range_size;
+                    Some(start + random_index)
+                }
+                
             } else {
                 None
             }
