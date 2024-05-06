@@ -298,7 +298,8 @@ pub mod prelude {
     }
 
     /// Call with the start and end of the range (both `f32`).
-    /// The range is inclusive on both ends.
+    /// The range is inclusive on start, and never quite reaches end (At least it was never
+    /// observed during testing).
     /// 
     /// ## Returns
     /// Will return `None` if start is bigger than end, or if random_f32() fails. This is highly unlikely, but possible.
