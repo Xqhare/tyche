@@ -59,6 +59,68 @@ mod tests;
 pub mod prelude {
     use std::{fs::File, io::Read, ops::Sub};
 
+    /// Generates a cryptographically secure pseudorandom u8. Leveraging the inbuilt Linux or MacOSX CSPRING.
+    ///
+    /// ## Returns:
+    /// Returns `None` if the CSPRNG has no entropy available or no access to the CSPRNG was possible. This is highly unlikely, but possible.
+    /// Returns `Some(u8)` otherwise.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_u8;
+    ///
+    /// fn main() {
+    ///   let random_number: u8 = random_u8().unwrap();
+    ///   println!("Generated random u8: {}", random_number);
+    /// }
+    /// ```
+    pub fn random_u8() -> Option<u8> {
+        let rng = File::open("/dev/urandom");
+        if rng.is_ok() {
+            let mut buffer = [0u8; 1];
+            if rng.unwrap().read_exact(&mut buffer).is_ok() {
+                return Some(buffer[0].into());
+            } else {
+                return None;
+            }
+        } else {
+            return None;
+        }
+    }
+
+    /// Generates a cryptographically secure pseudorandom u16 by combining 2 random u8 numbers and
+    /// combining their bytes. The little Endian is used for that here, mainly because it is better
+    /// optimised for x86 and ARM processors.
+    ///
+    /// ## Returns
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
+    /// `Some(u16)` with the random u16 number.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_u16;
+    ///
+    /// fn main() {
+    ///   let random_number: u16 = random_u16().unwrap();
+    ///   println!("Generated random u16: {}", random_number);
+    /// }
+    /// ```
+    pub fn random_u16() -> Option<u16> {
+        let rng = File::open("/dev/urandom");
+        if rng.is_ok() {
+            let mut buffer = [0u8; 2];
+            let temp = rng.unwrap().read_exact(&mut buffer);
+            if temp.is_ok() {
+                let out = u16::from_le_bytes(buffer);
+                Some(out)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
     /// Generates a cryptographically secure pseudorandom f32 by combining 4 random u8 numbers and
     /// combining their bytes. The little Endian is used for that here, mainly because it is better
     /// optimised for x86 and ARM processors.
@@ -136,67 +198,9 @@ pub mod prelude {
         }
     }
     
-    /// Generates a cryptographically secure pseudorandom u8. Leveraging the inbuilt Linux or MacOSX CSPRING.
-    ///
-    /// ## Returns:
-    /// Returns `None` if the CSPRNG has no entropy available or no access to the CSPRNG was possible. This is highly unlikely, but possible.
-    /// Returns `Some(u8)` otherwise.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_u8;
-    ///
-    /// fn main() {
-    ///   let random_number: u8 = random_u8().unwrap();
-    ///   println!("Generated random u8: {}", random_number);
-    /// }
-    /// ```
-    pub fn random_u8() -> Option<u8> {
-        let rng = File::open("/dev/urandom");
-        if rng.is_ok() {
-            let mut buffer = [0u8; 1];
-            if rng.unwrap().read_exact(&mut buffer).is_ok() {
-                return Some(buffer[0].into());
-            } else {
-                return None;
-            }
-        } else {
-            return None;
-        }
-    }
+    
 
-    /// Generates a cryptographically secure pseudorandom u16 by combining 2 random u8 numbers and
-    /// combining their bytes. The little Endian is used for that here, mainly because it is better
-    /// optimised for x86 and ARM processors.
-    ///
-    /// ## Returns
-    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
-    /// `Some(u16)` with the random u16 number.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_u16;
-    ///
-    /// fn main() {
-    ///   let random_number: u16 = random_u16().unwrap();
-    ///   println!("Generated random u16: {}", random_number);
-    /// }
-    /// ```
-    pub fn random_u16() -> Option<u16> {
-        let rng = File::open("/dev/urandom");
-        if rng.is_ok() {
-            let mut buffer = [0u8; 2];
-            let temp = rng.unwrap().read_exact(&mut buffer);
-            if temp.is_ok() {
-                let out = u16::from_le_bytes(buffer);
-                Some(out)
-            } else {
-                None
-            }
-        } else {
-            None
-        }
-    }
+    
 
     /// Generates a cryptographically secure pseudorandom u32 by combining 4 random u8 numbers and
     /// combining their bytes. The little Endian is used for that here, mainly because it is better
