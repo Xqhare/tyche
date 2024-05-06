@@ -28,6 +28,9 @@
 //!     
 //!     let random_number_f32: f32 = random_f32().unwrap();
 //!     println!("Generated random f32: {}", random_number_f32);
+//!
+//!     let random_string: String = random_string().unwrap();
+//!     println!("Generated random String: {}", random_string);
 //! 
 //!     let chosen_element = random_from_range(0, 100).unwrap();
 //!     println!("Chosen element {chosen_element}, in range 0-100");
@@ -77,6 +80,46 @@ pub mod prelude {
             let temp = rng.unwrap().read_exact(&mut buffer);
             if temp.is_ok() {
                 let out = f32::from_le_bytes(buffer);
+                Some(out)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
+    /// This generates a random character. Because I am mapping random noise as utf8 characters,
+    /// some wierd output is to be expected and will propably be needed to be sanatised. So while this does work, take care if you end up using
+    /// it.
+    ///
+    /// ## Returns
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
+    /// `Some(String)` with the random String.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_string;
+    ///
+    /// fn main() {
+    ///   let random_string: String = random_string().unwrap();
+    ///   println!("Generated random String: {}", random_string);
+    /// }
+    /// ```
+    pub fn random_string() -> Option<String> {
+        let rng = File::open("/dev/urandom");
+        if rng.is_ok() {
+            let mut buffer = [0u8; 10];
+            let temp = rng.unwrap().read_exact(&mut buffer);
+            if temp.is_ok() {
+                let mut out: String = Default::default();
+                let tt: Vec<_> = buffer.bytes().map(|c| String::from_utf8(vec![c.unwrap()])).collect();
+                for entry in tt {
+                    if entry.is_ok() {
+                        out.push_str(entry.unwrap().as_str());
+                        break;
+                    }
+                }
                 Some(out)
             } else {
                 None
