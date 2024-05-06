@@ -1,4 +1,4 @@
-//! # Tyche: A Rust Randomness Library
+//! # Tyche Yields Cryptographic High-Quality Entropy: A Rust Randomness Library
 //!
 //! The name Tyche is inspired by the Greek goddess of fortune, Tyche (Τύχη). In Greek mythology, Tyche personified luck, fortune, and fate.
 //! Just like the goddess was often depicted blindfolded, emphasizing the impartiality of fate, Tyche the library strives to deliver unpredictable and unbiased random numbers.
