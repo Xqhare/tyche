@@ -121,6 +121,74 @@ pub mod prelude {
         }
     }
 
+    /// Generates a cryptographically secure pseudorandom u32 by combining 4 random u8 numbers and
+    /// combining their bytes. The little Endian is used for that here, mainly because it is better
+    /// optimised for x86 and ARM processors.
+    ///
+    /// ## Returns
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
+    /// `Some(u32)` with the random u32 number.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_u32;
+    ///
+    /// fn main() {
+    ///   let random_number: u32 = random_u32().unwrap();
+    ///   println!("Generated random u32: {}", random_number);
+    /// }
+    /// ```
+    pub fn random_u32() -> Option<u32> {
+        let rng = File::open("/dev/urandom");
+        if rng.is_ok() {
+            let mut buffer = [0u8; 4];
+            let temp = rng.unwrap().read_exact(&mut buffer);
+            if temp.is_ok() {
+                let out = u32::from_le_bytes(buffer);
+                Some(out)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
+    /// Generates a cryptographically secure pseudorandom u64 by combining 8 random u8 numbers and
+    /// combining their bytes. The little Endian is used for that here, mainly because it is better
+    /// optimised for x86 and ARM processors.
+    ///
+    /// Please note that this function needs a 64bit system for obvious reasons.
+    ///
+    /// ## Returns
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
+    /// `Some(u64)` with the random u64 number.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_u64;
+    ///
+    /// fn main() {
+    ///   let random_number: u64 = random_u64().unwrap();
+    ///   println!("Generated random u64: {}", random_number);
+    /// }
+    /// ```
+    pub fn random_u64() -> Option<u64> {
+        let rng = File::open("/dev/urandom");
+        if rng.is_ok() {
+            let mut buffer = [0u8; 8];
+            let temp = rng.unwrap().read_exact(&mut buffer);
+            if temp.is_ok() {
+                let out = u64::from_le_bytes(buffer);
+                Some(out)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
     /// Generates a cryptographically secure pseudorandom f32 by combining 4 random u8 numbers and
     /// combining their bytes. The little Endian is used for that here, mainly because it is better
     /// optimised for x86 and ARM processors.
@@ -198,78 +266,6 @@ pub mod prelude {
         }
     }
     
-    
-
-    
-
-    /// Generates a cryptographically secure pseudorandom u32 by combining 4 random u8 numbers and
-    /// combining their bytes. The little Endian is used for that here, mainly because it is better
-    /// optimised for x86 and ARM processors.
-    ///
-    /// ## Returns
-    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
-    /// `Some(u32)` with the random u32 number.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_u32;
-    ///
-    /// fn main() {
-    ///   let random_number: u32 = random_u32().unwrap();
-    ///   println!("Generated random u32: {}", random_number);
-    /// }
-    /// ```
-    pub fn random_u32() -> Option<u32> {
-        let rng = File::open("/dev/urandom");
-        if rng.is_ok() {
-            let mut buffer = [0u8; 4];
-            let temp = rng.unwrap().read_exact(&mut buffer);
-            if temp.is_ok() {
-                let out = u32::from_le_bytes(buffer);
-                Some(out)
-            } else {
-                None
-            }
-        } else {
-            None
-        }
-    }
-
-    /// Generates a cryptographically secure pseudorandom u64 by combining 8 random u8 numbers and
-    /// combining their bytes. The little Endian is used for that here, mainly because it is better
-    /// optimised for x86 and ARM processors.
-    ///
-    /// Please note that this function needs a 64bit system for obvious reasons.
-    ///
-    /// ## Returns
-    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
-    /// `Some(u64)` with the random u64 number.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_u64;
-    ///
-    /// fn main() {
-    ///   let random_number: u64 = random_u64().unwrap();
-    ///   println!("Generated random u64: {}", random_number);
-    /// }
-    /// ```
-    pub fn random_u64() -> Option<u64> {
-        let rng = File::open("/dev/urandom");
-        if rng.is_ok() {
-            let mut buffer = [0u8; 8];
-            let temp = rng.unwrap().read_exact(&mut buffer);
-            if temp.is_ok() {
-                let out = u64::from_le_bytes(buffer);
-                Some(out)
-            } else {
-                None
-            }
-        } else {
-            None
-        }
-    }
-
     /// Call with the start and end of the range (both `usize`).
     /// The range is inclusive on both ends.
     /// 
