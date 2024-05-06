@@ -53,10 +53,12 @@ All functions return a `Option()`. This is because of the random number generato
 
 ### Basic Usage:
 
-Import the functions you need, or just type `use tyche::prelude::*` to get it all.
-
+Import the functions you need, or just 
 ```rust
 use tyche::prelude::*;
 
 ```
+to get it all and take a look.
+
+I would advice to start with the full example in the docs (or start of lib.rs). I would, I wrote it after all.
 
