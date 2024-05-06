@@ -14,15 +14,20 @@
 //! use tyche::prelude::*;
 //!
 //! fn main() {
-//!     let random_number8: u8 = random().unwrap();
+//!     let random_number8: u8 = random_u8().unwrap();
 //!     println!("Generated random u8: {}", random_number8);
+//!
+//!     let random_number16: u16 = random_u16().unwrap();
+//!     println!("Generated random u16: {}", random_number16);
 //!    
 //!     let random_number32: u32 = random_u32().unwrap();
 //!     println!("Generated random u32: {}", random_number32);
 //!     
-//!     let random_number64 = random_u64();
-//!     println!("{:?}", random_number64);
-//!     assert!(random_number64.is_some());
+//!     let random_number64: u64 = random_u64().unwrap();
+//!     println!("Generated random u64: {}", random_number64);
+//!     
+//!     let random_number_f32: f32 = random_f32().unwrap();
+//!     println!("Generated random f32: {}", random_number_f32);
 //! 
 //!     let chosen_element = random_from_range(0, 100).unwrap();
 //!     println!("Chosen element {chosen_element}, in range 0-100");
@@ -32,12 +37,12 @@
 //!     println!("Chosen index {}; Number at index {}", random_index, collection[random_index]);
 //! 
 //!     let random_ceiling = random_with_ceiling(100);
-//!     println!("The random number between 0 and {} is: {}", n, random_ceiling.unwrap());
+//!     println!("The random number between 0 and 100 is: {}", random_ceiling.unwrap());
 //!     assert!(random_ceiling.is_some());
 //!
 //!     let random_floor = random_with_floor(0);
 //!     let max_usize = usize::MAX;
-//!     println!("The random number between {} and {} is: {}", max_usize, n, random_floor.unwrap());
+//!     println!("The random number between 0 and {} is: {}", max_usize, random_floor.unwrap());
 //!     assert!(random_floor.is_some());
 //! }
 //! ```
@@ -47,6 +52,39 @@ mod tests;
 
 pub mod prelude {
     use std::{fs::File, io::Read};
+
+    /// Generates a cryptographically secure pseudorandom f32 by combining 4 random u8 numbers and
+    /// combining their bytes. The little Endian is used for that here, mainly because it is better
+    /// optimised for x86 and ARM processors.
+    ///
+    /// ## Returns
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
+    /// `Some(f32)` with the random f32 number.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_f32;
+    ///
+    /// fn main() {
+    ///   let random_number: f32 = random_f32().unwrap();
+    ///   println!("Generated random f32: {}", random_number);
+    /// }
+    /// ```
+    pub fn random_f32() -> Option<f32> {
+        let rng = File::open("/dev/urandom");
+        if rng.is_ok() {
+            let mut buffer = [0u8; 4];
+            let temp = rng.unwrap().read_exact(&mut buffer);
+            if temp.is_ok() {
+                let out = f32::from_le_bytes(buffer);
+                Some(out)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
     
     /// Generates a cryptographically secure pseudorandom u8. Leveraging the inbuilt Linux or MacOSX CSPRING.
     ///
@@ -56,14 +94,14 @@ pub mod prelude {
     ///
     /// ## Example:
     /// ```
-    /// use tyche::prelude::random;
+    /// use tyche::prelude::random_u8;
     ///
     /// fn main() {
-    ///   let random_number: u8 = random().unwrap();
+    ///   let random_number: u8 = random_u8().unwrap();
     ///   println!("Generated random u8: {}", random_number);
     /// }
     /// ```
-    pub fn random() -> Option<u8> {
+    pub fn random_u8() -> Option<u8> {
         let rng = File::open("/dev/urandom");
         if rng.is_ok() {
             let mut buffer = [0u8; 1];
@@ -74,6 +112,39 @@ pub mod prelude {
             }
         } else {
             return None;
+        }
+    }
+
+    /// Generates a cryptographically secure pseudorandom u16 by combining 2 random u8 numbers and
+    /// combining their bytes. The little Endian is used for that here, mainly because it is better
+    /// optimised for x86 and ARM processors.
+    ///
+    /// ## Returns
+    /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible.
+    /// `Some(u16)` with the random u16 number.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_u16;
+    ///
+    /// fn main() {
+    ///   let random_number: u16 = random_u16().unwrap();
+    ///   println!("Generated random u16: {}", random_number);
+    /// }
+    /// ```
+    pub fn random_u16() -> Option<u16> {
+        let rng = File::open("/dev/urandom");
+        if rng.is_ok() {
+            let mut buffer = [0u8; 2];
+            let temp = rng.unwrap().read_exact(&mut buffer);
+            if temp.is_ok() {
+                let out = u16::from_le_bytes(buffer);
+                Some(out)
+            } else {
+                None
+            }
+        } else {
+            None
         }
     }
 
@@ -232,7 +303,7 @@ pub mod prelude {
     ///
     /// ## Example:
     /// ```
-    /// use tyche::prelude::random_with_ceiling;
+    /// use tyche::prelude::random_with_floor;
     ///
     /// fn main() {
     ///    for n in 0..100000  {
