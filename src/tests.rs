@@ -106,6 +106,26 @@ fn test_random_i32range() {
 }
 
 #[test]
+fn test_random_u64range() {
+    let mut found0 = false;
+    let mut found100 = false;
+    for _ in 0..1000000 {
+        let answ = random_from_u64range(0, 100);
+        // println!("{:?}", answ);
+        if answ.unwrap() == 100 {
+            // println!("DID IT 100!!");
+            found100 = true;
+        }
+        if answ.unwrap() == 0 {
+            // println!("0! DID IT 0!");
+            found0 = true;
+        }
+        assert!(answ.is_some());
+    }
+    assert!(found0 && found100);
+}
+
+#[test]
 fn test_random_f32range() {
     let mut found0_1 = false;
     let mut found100_1 = false;
