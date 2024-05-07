@@ -72,6 +72,7 @@
 //! }
 //! ```
 
+#![allow(clippy::needless_doctest_main)]
 #[cfg(test)]
 mod tests;
 
@@ -98,12 +99,12 @@ pub mod prelude {
         if rng.is_ok() {
             let mut buffer = [0u8; 1];
             if rng.unwrap().read_exact(&mut buffer).is_ok() {
-                return Some(buffer[0].into());
+                Some(buffer[0])
             } else {
-                return None;
+                None
             }
         } else {
-            return None;
+            None
         }
     }
 
@@ -304,7 +305,7 @@ pub mod prelude {
             if temp.is_ok() {
                 let out = f32::from_le_bytes(buffer);
                 if out.is_nan() {
-                    return random_f32();
+                    random_f32()
                 } else {
                     Some(out)
                 }
@@ -318,7 +319,8 @@ pub mod prelude {
 
     /// This generates a random character. Because I am mapping random noise as `utf8` characters,
     /// some wierd output is to be expected and will propably be needed to be sanatised. So while this does work, take care if you end up using
-    /// it.
+    /// it. This is literally the most unsafe and non-standart way of doing things and really isn't
+    /// suited for all usecases.
     ///
     /// ## Returns
     /// `None` if the CSPRNG has no entropy available or there is no access to it. This is highly unlikely, but possible. Most likely the program cannot access `/dev/urandom`.
@@ -343,11 +345,8 @@ pub mod prelude {
                 // This is probably the most black magic, unsafe and non standart way of doing
                 // someting I have ever done.
                 let black_magic: Vec<_> = buffer.bytes().map(|c| String::from_utf8(vec![c.unwrap()])).collect();
-                for entry in black_magic {
-                    if entry.is_ok() {
-                        out.push_str(entry.unwrap().as_str());
-                        break;
-                    }
+                if let Some(entry) = black_magic.into_iter().flatten().next() {
+                    out.push_str(&entry);
                 }
                 Some(out)
             } else {
@@ -378,7 +377,7 @@ pub mod prelude {
     /// ```
     pub fn random_from_range(start: usize, end: usize) -> Option<usize> {
         if start < end {
-            let range_size = (end - start).saturating_add(1);
+            let range_size = (end).saturating_sub(start).saturating_add(1);
             let rng = random_u32();
             if rng.is_some() {
                 let random_index = rng.unwrap() as usize % range_size;
@@ -492,7 +491,7 @@ pub mod prelude {
                     let random_index = rng.unwrap() % range_size;
                     Some(start + random_index)
                 } else {
-                    let random_index = (rng.unwrap() * -1) % range_size;
+                    let random_index = -rng.unwrap() % range_size;
                     Some(start + random_index)
                 }
                 
