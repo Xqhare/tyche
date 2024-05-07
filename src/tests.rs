@@ -3,9 +3,9 @@ use crate::prelude::*;
 
 #[test]
 fn test_random_str() {
-    for _ in 0..1000000 {
+    for _ in 0..1500000 {
         let tmp = random_string();
-        // println!("{:?}", tmp);
+        // println!("{:?}, len: {:?}", tmp, tmp.clone().unwrap().len());
         assert!(tmp.is_some());
     }
     
@@ -13,7 +13,7 @@ fn test_random_str() {
 
 #[test]
 fn test_random_i8() {
-    for _ in 0..1000000 {
+    for _ in 0..1500000 {
             let answ = random_i8();
             // println!("{:?}", answ);
             assert!(answ.is_some());
@@ -22,7 +22,7 @@ fn test_random_i8() {
 
 #[test]
 fn test_random_i32() {
-    for _ in 0..1000000 {
+    for _ in 0..1500000 {
             let answ = random_i32();
             // println!("{:?}", answ);
             assert!(answ.is_some());
@@ -31,7 +31,7 @@ fn test_random_i32() {
 
 #[test]
 fn test_random_u8() {
-    for _ in 0..1000000 {
+    for _ in 0..1500000 {
         let answ = random_u8();
         // println!("{:?}", answ);
         assert!(answ.is_some());
@@ -40,7 +40,7 @@ fn test_random_u8() {
 
 #[test]
 fn test_random_u16() {
-    for _ in 0..1000000 {
+    for _ in 0..1500000 {
         let answ = random_u16();
         // println!("{:?}", answ);
         assert!(answ.is_some());
@@ -49,7 +49,7 @@ fn test_random_u16() {
 
 #[test]
 fn test_random_u32() {
-    for _ in 0..1000000 {
+    for _ in 0..1500000 {
         let answ = random_u32();
         // println!("{:?}", answ);
         assert!(answ.is_some());
@@ -58,7 +58,7 @@ fn test_random_u32() {
 
 #[test]
 fn test_random_u64() {
-    for _ in 0..1000000 {
+    for _ in 0..1500000 {
         let answ = random_u64();
         // println!("{:?}", answ);
         assert!(answ.is_some());
@@ -67,7 +67,7 @@ fn test_random_u64() {
 
 #[test]
 fn test_random_f32() {
-    for _ in 0..1000000 {
+    for _ in 0..1500000 {
         let answ = random_f32();
         // println!("{:?}", answ);
         assert!(answ.is_some());
@@ -78,7 +78,7 @@ fn test_random_f32() {
 fn test_random_range() {
     let mut found0 = false;
     let mut found100 = false;
-    for _ in 0..1000000 {
+    for _ in 0..1500000 {
         let answ = random_from_range(0, 100);
         // println!("{:?}", answ);
         if answ.unwrap() == 100 {
@@ -98,7 +98,7 @@ fn test_random_range() {
 fn test_random_i32range() {
     let mut found_neg100 = false;
     let mut found100 = false;
-    for _ in 0..1000000 {
+    for _ in 0..1500000 {
         let answ = random_from_i32range(-100, 100);
         // println!("{:?}", answ);
         if answ.unwrap() == 100 {
@@ -118,7 +118,7 @@ fn test_random_i32range() {
 fn test_random_u64range() {
     let mut found0 = false;
     let mut found100 = false;
-    for _ in 0..1000000 {
+    for _ in 0..1500000 {
         let answ = random_from_u64range(0, 100);
         // println!("{:?}", answ);
         if answ.unwrap() == 100 {
@@ -139,7 +139,7 @@ fn test_random_f32range() {
     let mut found0_1 = false;
     let mut found100_1 = false;
     //let mut tmpvec: Vec<f32> = Default::default();
-    for _ in 0..1000000 {
+    for _ in 0..1500000 {
         let answ = random_from_f32range(0.1, 100.1);
         //println!("{:?}", answ);
         assert!(answ.is_some());
@@ -158,7 +158,7 @@ fn test_random_f32range() {
 
 #[test]
 fn test_random_floor() {
-    for n in 0..1000000 {
+    for n in 0..1500000 {
         let answ = random_with_floor(n);
         // println!("{:?}", answ);
         assert!(answ.is_some());
@@ -167,7 +167,7 @@ fn test_random_floor() {
 
 #[test]
 fn test_random_ceiling() {
-    for n in 1000000..2000000  {
+    for n in 1000000..2500000  {
         let answ = random_with_ceiling(n);
         // println!("The random number between 0 and {} is: {}", n, answ.unwrap());
         assert!(answ.is_some());
@@ -179,7 +179,7 @@ fn test_random_index() {
     let collection = (0..1000).collect::<Vec<usize>>();
     let mut found999 = false;
     let mut found0 = false;
-    for _ in 0..1000000 {
+    for _ in 0..1500000 {
         let random_index = random_index(collection.len());
         assert!(random_index.is_some());
         // println!("{:?}", random_index);
