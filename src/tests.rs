@@ -48,6 +48,15 @@ fn test_random_u16() {
 }
 
 #[test]
+fn test_random_u32() {
+    for _ in 0..1000000 {
+        let answ = random_u32();
+        // println!("{:?}", answ);
+        assert!(answ.is_some());
+    }
+}
+
+#[test]
 fn test_random_u64() {
     for _ in 0..1000000 {
         let answ = random_u64();
