@@ -63,12 +63,10 @@
 //! 
 //!     let random_ceiling = random_with_ceiling(100);
 //!     println!("The random number between 0 and 100 is: {}", random_ceiling.unwrap());
-//!     assert!(random_ceiling.is_some());
 //!
 //!     let random_floor = random_with_floor(0);
 //!     let max_usize = usize::MAX;
 //!     println!("The random number between 0 and {} is: {}", max_usize, random_floor.unwrap());
-//!     assert!(random_floor.is_some());
 //! }
 //! ```
 
@@ -500,7 +498,6 @@ pub mod prelude {
     ///    for n in 100000..200000  {
     ///         let answ = random_with_ceiling(n);
     ///         println!("The random number between 0 and {} is: {}", n, answ.unwrap());
-    ///         assert!(answ.is_some());
     ///    }
     /// }
     /// ```
@@ -527,7 +524,6 @@ pub mod prelude {
     ///         let answ = random_with_floor(n);
     ///         let max_usize = usize::MAX;
     ///         println!("The random number between {} and {} is: {}", max_usize, n, answ.unwrap());
-    ///         assert!(answ.is_some());
     ///    }
     /// }
     /// ```
