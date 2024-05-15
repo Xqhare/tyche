@@ -9,7 +9,7 @@
 //!
 //! ## Returns
 //!
-//! All functions return a `Result()`. This is because of the random number generator used on the backend. It can run out of entropy, something that is highly unlikely but possible, or the program can not open `/dev/urandom`. If you get a `Err()` back the second reason is the most likely canditate as I have not encountered one `Err()` value not caused by this or improper calling by supplying bad arguments.
+//! All functions return a `Result()`. This is because of the random number generator used on the backend. It can run out of entropy, something that is highly unlikely but possible, or the program can not open `/dev/urandom`. If you get a `Err()` back the second reason is the most likely canditate as I have not encountered one `Err()` value not caused by this or improper calling by supplying bad arguments. All `Error`'s are `std::io::Error` types.
 //!
 //! ## Function examples:
 //!
@@ -80,6 +80,7 @@ pub mod prelude {
     /// Generates a cryptographically secure pseudorandom `u8`. Leveraging the inbuilt Linux or MacOSX CSPRING.
     ///
     /// ## Errors
+    /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
@@ -107,6 +108,7 @@ pub mod prelude {
     /// optimised for x86 and ARM processors.
     ///
     /// ## Errors
+    /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
@@ -135,6 +137,7 @@ pub mod prelude {
     /// optimised for x86 and ARM processors.
     ///
     /// ## Errors
+    /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
@@ -165,6 +168,7 @@ pub mod prelude {
     /// Please note that this function needs a 64bit system for obvious reasons.
     ///
     /// ## Errors
+    /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
@@ -191,6 +195,7 @@ pub mod prelude {
     /// optimised for x86 and ARM processors.
     ///
     /// ## Errors
+    /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
@@ -218,6 +223,7 @@ pub mod prelude {
     /// optimised for x86 and ARM processors.
     ///
     /// ## Errors
+    /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
@@ -245,6 +251,7 @@ pub mod prelude {
     /// optimised for x86 and ARM processors.
     ///
     /// ## Errors
+    /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
@@ -278,6 +285,7 @@ pub mod prelude {
     /// suited for all usecases.
     ///
     /// ## Errors
+    /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
@@ -318,6 +326,7 @@ pub mod prelude {
     /// Uses a 32bit seeded rng, for 64bit seeded rng please use `random_from_u64range`.
     ///
     /// ## Errors
+    /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
@@ -350,6 +359,7 @@ pub mod prelude {
     /// Please note that this function needs a 64bit system for obvious reasons.
     ///
     /// ## Errors
+    /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
@@ -381,6 +391,7 @@ pub mod prelude {
     /// observed during testing).
     /// 
     /// ## Errors
+    /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
@@ -421,6 +432,7 @@ pub mod prelude {
     /// The range is inclusive on both ends.
     /// 
     /// ## Errors
+    /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
@@ -457,6 +469,7 @@ pub mod prelude {
     /// it.
     ///
     /// ## Errors
+    /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
@@ -484,6 +497,7 @@ pub mod prelude {
     /// Computes a random number between 0 and the `ceiling` argument.
     ///
     /// ## Errors
+    /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
@@ -509,6 +523,7 @@ pub mod prelude {
     /// Computes a random number between `usize::MAX` and the `floor` argument.
     ///
     /// ## Errors
+    /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///

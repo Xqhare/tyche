@@ -69,6 +69,8 @@ To add Tyche to your project, include it in your Cargo.toml dependencies.
 tyche = { git = "https://github.com/Xqhare/tyche" }
 ```
 
+Then run `cargo update` to download it from the github repo.
+
 [Learn more.](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html)
 
 ## Documentation
