@@ -84,10 +84,3 @@ It is also a recursive acronym:
 ## License
 
 Tyche is available under the Eclipse Public License 2.0.
-
-But what does that mean? (Explained by a non lawyer)
-- If you change the code and use it somewhere the source code has to be made available.
-- If you simply use it, and keep it in a seperate unchanged file (using it as a dependency for example) you are NOT required to make source code available.
-- Include a copy of the full license text and the original copyright notice.
-- License any derivative works of the library under the same or later version of the EPL.
-- If you commecially distribute a product tat includes an EPL-licensed program, you are required to defend that program's contributers from any lawsuits/legal damages that may arise involving your product.
