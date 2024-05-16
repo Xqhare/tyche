@@ -54,7 +54,7 @@ For detailed usage instructions and a comprehensive list of functionalities, ref
 
 Examples have been written to be runable, small in scope and easily followable.
 
-All functions return a `Option()`. This is because of the random number generator used on the backend. It can run out of entropy, something that is highly unlikely but possible, or the program can not open `/dev/urandom`. If you get a `None` back the second reason is the most likely canditate as I have not encountered one `None` value not caused by this.
+All functions return a `Result()`. This is because of the random number generator used on the backend. It can run out of entropy, something that is highly unlikely but possible, or the program can not open `/dev/urandom`. If you get a `Err()` back the second reason is the most likely canditate as I have not encountered one `Err()` value not caused by this.
 
 ### Basic Usage:
 
