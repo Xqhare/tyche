@@ -312,10 +312,7 @@ pub mod prelude {
         if let Some(entry) = black_magic.into_iter().flatten().next() {
             out.push_str(&entry);
         } else {
-            match random_string() {
-                Ok(result) => return Ok(result),
-                Err(error) => return Err(error),
-            };
+            return random_string();
         }
         Ok(out)
 }
@@ -348,6 +345,8 @@ pub mod prelude {
             let rng = random_u32()?;
             let random_index = rng as usize % range_size;
             Ok(start.saturating_add(random_index))
+        } else if start == end {
+            Ok(start)
         } else {
             Err(Error::other(format!("Start '{}' is larger than end '{}'!", start, end)))
         }
@@ -381,6 +380,8 @@ pub mod prelude {
             let rng = random_u64()?;
             let random_index = rng % range_size;
             Ok(start.saturating_add(random_index))
+        } else if start == end {
+            Ok(start)
         } else {
             Err(Error::other(format!("Start '{}' is larger than end '{}'!", start, end)))
         }
@@ -423,6 +424,8 @@ pub mod prelude {
                     let random_index = (rng * -1.0) % range_size;
                     Ok(start.add(random_index))
                 }
+        } else if start == end {
+            Ok(start)
         } else {
             Err(Error::other(format!("Start '{}' is larger than end '{}'!", start, end)))
         }
@@ -452,13 +455,15 @@ pub mod prelude {
         if start < end {
             let range_size = end.sub(start).add(1);
             let rng = random_i32()?;
-                if rng.is_positive() {
-                    let random_index = rng % range_size;
-                    Ok(start.add(random_index))
-                } else {
-                    let random_index = -rng % range_size;
-                    Ok(start.add(random_index))
-                }
+            if rng.is_positive() {
+                let random_index = rng % range_size;
+                Ok(start.add(random_index))
+            } else {
+                let random_index = -rng % range_size;
+                Ok(start.add(random_index))
+            }
+        } else if start == end {
+            Ok(start)
         } else {
             Err(Error::other(format!("Start '{}' is larger than end '{}'!", start, end)))
 
