@@ -94,6 +94,19 @@ fn test_random_range() {
 }
 
 #[test]
+fn test_random_range_0to0() {
+    let normal_range = random_from_range(0, 0);
+    assert!(normal_range.is_ok());
+    let i32_range = random_from_i32range(0, 0);
+    assert!(i32_range.is_ok());
+    let f32_range = random_from_f32range(0.0, 0.0);
+    assert!(f32_range.is_ok());
+    let u64_range = random_from_u64range(0, 0);
+    assert!(u64_range.is_ok());
+    // println!("{:?} | {:?} | {:?} | {:?}", normal_range, i32_range, f32_range, u64_range);
+}
+
+#[test]
 fn test_random_i32range() {
     let mut found_neg100 = false;
     let mut found100 = false;
@@ -189,4 +202,23 @@ fn test_random_index() {
         }
     }
     assert!(found0 && found999);
+}
+
+#[test]
+fn test_failure_states() {
+    // Not all functions have easily reproducable errors, especially os read errors, so im only testing my own errors
+    //
+    // Ranges only error if start is larger than 0
+    let normal_range = random_from_range(1, 0);
+    assert!(normal_range.is_err());
+    let i32_range = random_from_i32range(1, 0);
+    assert!(i32_range.is_err());
+    let f32_range = random_from_f32range(1.0, 0.0);
+    assert!(f32_range.is_err());
+    let u64_range = random_from_u64range(1, 0);
+    assert!(u64_range.is_err());
+
+    // random_index() errors if collection length is less than 1
+    let index = random_index(0);
+    assert!(index.is_err());
 }
