@@ -36,31 +36,6 @@ Tyche is a lightweigt wrapper around the inbuilt CSPRNG in UNIX systems, providi
 - random usize with ceiling
 - random usize with floor
 
-## The Name: Tyche
-
-The name Tyche is inspired by the Greek goddess of fortune, Tyche (Τύχη). In Greek mythology, Tyche personified luck, fortune, and fate. Just as Tyche's influence brought about both fortunate and unfortunate events, this library aims to provide a reliable source of randomness for various applications.
-
-Just like the goddess was often depicted blindfolded, emphasizing the impartiality of fate, Tyche the library strives to deliver unpredictable and unbiased random numbers.
-
-It is also a recursive acronym:
-
-- Tyche
-- Yields
-- Cryptographic
-- High-Quality
-- Entropy
-
-## License
-
-Tyche is available under the Eclipse Public License 2.0.
-
-But what does that mean? (Explained by a non lawyer)
-- If you change the code and use it somewhere the source code has to be made available.
-- If you simply use it, and keep it in a seperate unchanged file (using it as a dependency for example) you are NOT required to make source code available.
-- Include a copy of the full license text and the original copyright notice.
-- License any derivative works of the library under the same or later version of the EPL.
-- If you commecially distribute a product tat includes an EPL-licensed program, you are required to defend that program's contributers from any lawsuits/legal damages that may arise involving your product.
-
 ## Getting Started
 
 To add Tyche to your project, include it in your Cargo.toml dependencies.
@@ -79,7 +54,7 @@ For detailed usage instructions and a comprehensive list of functionalities, ref
 
 Examples have been written to be runable, small in scope and easily followable.
 
-All functions return a `Option()`. This is because of the random number generator used on the backend. It can run out of entropy, something that is highly unlikely but possible, or the program can not open `/dev/urandom`. If you get a `None` back the second reason is the most likely canditate as I have not encountered one `None` value not caused by this.
+All functions return a `Result()`. This is because of the random number generator used on the backend. It can run out of entropy, something that is highly unlikely but possible, or the program can not open `/dev/urandom`. If you get a `Err()` back the second reason is the most likely canditate as I have not encountered one `Err()` value not caused by this.
 
 ### Basic Usage:
 
@@ -92,3 +67,20 @@ to get it all and take a look.
 
 I would advice to start with the full example in the docs (or start of lib.rs). I would, I wrote it after all.
 
+## The Name: Tyche
+
+The name Tyche is inspired by the Greek goddess of fortune, Tyche (Τύχη). In Greek mythology, Tyche personified luck, fortune, and fate. Just as Tyche's influence brought about both fortunate and unfortunate events, this library aims to provide a reliable source of randomness for various applications.
+
+Just like the goddess was often depicted blindfolded, emphasizing the impartiality of fate, Tyche the library strives to deliver unpredictable and unbiased random numbers.
+
+It is also a recursive acronym:
+
+- Tyche
+- Yields
+- Cryptographic
+- High-Quality
+- Entropy
+
+## License
+
+Tyche is available under the Eclipse Public License 2.0.
