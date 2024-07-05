@@ -12,6 +12,32 @@ fn test_random_str() {
 }
 
 #[test]
+fn test_random_bool() {
+    for _ in 0..1500000 {
+        let answ = random_bool();
+        // println!("{:?}", answ);
+        assert!(answ.is_ok());
+        if *answ.as_ref().unwrap() {
+            // true == true
+            assert!(answ.unwrap());
+        } else {
+            // false == false 
+            assert!(!answ.unwrap());
+        }
+    }
+}
+
+#[test]
+fn test_random_latin_char() {
+    for _ in 0..1500000 {
+        let answ = random_latin_char();
+        // println!("{:?}", answ);
+        assert!(answ.is_ok());
+        assert!(answ.unwrap().is_alphabetic());
+    }
+}
+
+#[test]
 fn test_random_i8() {
     for _ in 0..1500000 {
             let answ = random_i8();
