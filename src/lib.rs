@@ -9,7 +9,7 @@
 //!
 //! ## Returns
 //!
-//! All functions return a `Result()`. This is because of the random number generator used on the backend. It can run out of entropy, something that is highly unlikely but possible, or the program can not open `/dev/urandom`. If you get a `Err()` back the second reason is the most likely canditate as I have not encountered one `Err()` value not caused by this or improper calling by supplying bad arguments. All `Error`'s are `std::io::Error` types.
+//! All functions return a `Result()`. This is because of the random number generator used on the backend. It can run out of entropy, something that is highly unlikely but possible, or the program can not open `/dev/urandom`. If you get a `Err()` back the second reason is the most likely candidate as I have not encountered one `Err()` value not caused by this or improper calling by supplying bad arguments. All `Error`'s are `std::io::Error` types.
 //!
 //! ## Function examples:
 //!
@@ -44,6 +44,9 @@
 //!
 //!     let random_string: String = random_string().unwrap();
 //!     println!("Generated random String: {}", random_string);
+//!
+//!     let random_latin_char: char = random_latin_char().unwrap();
+//!     println!("Generated random latin char: {}", random_latin_char);
 //! 
 //!     let chosen_element = random_from_range(0, 100).unwrap();
 //!     println!("Chosen element {chosen_element}, in range 0-100");
@@ -67,6 +70,9 @@
 //!     let random_floor = random_with_floor(0);
 //!     let max_usize = usize::MAX;
 //!     println!("The random number between 0 and {} is: {}", max_usize, random_floor.unwrap());
+//!
+//!     let random_bool = random_bool().unwrap();
+//!     println!("Random bool: {}", random_bool);
 //! }
 //! ```
 
@@ -75,7 +81,7 @@
 mod tests;
 
 pub mod prelude {
-    use std::{fs::File, io::{Read, Error}, ops::{Sub, Add}};
+    use std::{fs::File, io::{Error, ErrorKind, Read}, ops::{Add, Sub}};
 
     /// Generates a cryptographically secure pseudorandom `u8`. Leveraging the inbuilt Linux or MacOSX CSPRING.
     ///
@@ -280,9 +286,11 @@ pub mod prelude {
     }
 
     /// This generates a random character. Because I am mapping random noise as `utf8` characters,
-    /// some wierd output is to be expected and will propably be needed to be sanatised. So while this does work, take care if you end up using
-    /// it. This is literally the most unsafe and non-standart way of doing things and really isn't
+    /// some weird output is to be expected and will probably be needed to be sanatised. So while this does work, take care if you end up using
+    /// it. This is literally the most unsafe and non-standard way of doing things and really isn't
     /// suited for all usecases.
+    ///
+    /// Consider using `random_latin_char` instead.
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
@@ -306,8 +314,8 @@ pub mod prelude {
         let mut buffer = [0u8; 10];
         rng.read_exact(&mut buffer)?;
         let mut out: String = Default::default();
-        // This is probably the most black magic, unsafe and non standart way of doing
-        // someting I have ever done.
+        // This is probably the most black magic, unsafe and non standard way of doing
+        // something I have ever done.
         let black_magic: Vec<_> = buffer.bytes().map(|c| String::from_utf8(vec![c.unwrap()])).collect();
         if let Some(entry) = black_magic.into_iter().flatten().next() {
             out.push_str(&entry);
@@ -315,7 +323,51 @@ pub mod prelude {
             return random_string();
         }
         Ok(out)
-}
+    }
+
+    /// Generates a random latin character, can be upper or lower case.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_latin_char;
+    ///
+    /// fn main() {
+    ///   let random_char: char = random_latin_char().unwrap();
+    ///   println!("Generated random char: {}", random_char);
+    /// }
+    /// ```
+    pub fn random_latin_char() -> Result<char, Error> {
+        let chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+        let chosen_char = chars[random_index(chars.len())?];
+        if random_bool()? {
+            Ok(chosen_char.to_ascii_uppercase())
+        } else {
+            Ok(chosen_char)
+        }
+    }
+
+    /// Generates a random boolean.
+    ///
+    /// ## Example:
+    /// ```
+    /// use tyche::prelude::random_bool;
+    ///
+    /// fn main() {
+    ///   let random_bool: bool = random_bool().unwrap();
+    ///   println!("Generated random bool: {}", random_bool);
+    /// }
+    /// ```
+    pub fn random_bool() -> Result<bool, Error> {
+        let mut rng = File::open("/dev/urandom")?;
+        let mut buffer = [0u8; 1];
+        rng.read_exact(&mut buffer)?;
+        match buffer[0] {
+            0 => Ok(false),
+            1 => Ok(true),
+            // Should never happen
+            _ => Err(Error::new(ErrorKind::Other, "Failed to read random bool")),
+        }
+    }
     
     /// Call with the start and end of the range (both `usize`).
     /// The range is inclusive on both ends.
@@ -410,7 +462,7 @@ pub mod prelude {
     /// ```
     pub fn random_from_f32range(start: f32, end: f32) -> Result<f32, Error> {
         if start < end {
-            // I still believe this to have an off by one error, however it is infinitly small
+            // I still believe this to have an off by one error, however it is infinity small
             // because of f32.
             // As further reading did not help in the slightes but confirm that floating point
             // numbers are weird I will have to live with it. It seems to grow towards end, and
@@ -470,7 +522,7 @@ pub mod prelude {
         }
     }
 
-    /// Takes in the length of a collection, like a vector, and retruns a valid, random, index for
+    /// Takes in the length of a collection, like a vector, and returns a valid, random, index for
     /// it.
     ///
     /// ## Errors
