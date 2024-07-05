@@ -363,7 +363,6 @@ pub mod prelude {
         rng.read_exact(&mut buffer)?;
         // & == bitwise AND
         let bit = buffer[0] & 1;
-        println!("{:?}", bit);
         match bit {
             0 => Ok(false),
             1 => Ok(true),
