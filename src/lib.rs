@@ -361,7 +361,10 @@ pub mod prelude {
         let mut rng = File::open("/dev/urandom")?;
         let mut buffer = [0u8; 1];
         rng.read_exact(&mut buffer)?;
-        match buffer[0] {
+        // & == bitwise AND
+        let bit = buffer[0] & 1;
+        println!("{:?}", bit);
+        match bit {
             0 => Ok(false),
             1 => Ok(true),
             // Should never happen
