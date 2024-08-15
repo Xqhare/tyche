@@ -42,11 +42,14 @@
 //!     let random_number_f32: f32 = random_f32().unwrap();
 //!     println!("Generated random f32: {}", random_number_f32);
 //!
-//!     let random_string: String = random_string().unwrap();
+//!     let random_string: String = random_string(false).unwrap();
 //!     println!("Generated random String: {}", random_string);
 //!
 //!     let random_latin_char: char = random_latin_char().unwrap();
 //!     println!("Generated random latin char: {}", random_latin_char);
+//!
+//!     let random_bool: bool = random_bool().unwrap();
+//!     println!("Generated random bool: {}", random_bool);
 //! 
 //!     let chosen_element = random_from_range(0, 100).unwrap();
 //!     println!("Chosen element {chosen_element}, in range 0-100");
@@ -83,7 +86,7 @@ mod tests;
 pub mod prelude {
     use std::{fs::File, io::{Error, ErrorKind, Read}, ops::{Add, Sub}};
 
-    /// Generates a cryptographically secure pseudorandom `u8`. Leveraging the inbuilt Linux or MacOSX CSPRING.
+    /// Generates a cryptographically secure pseudorandom `u8`. 
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
@@ -109,9 +112,7 @@ pub mod prelude {
         Ok(buffer[0])
     }
 
-    /// Generates a cryptographically secure pseudorandom `u16` by casting 2 random bytes as a `u16`,
-    /// combining their bytes. The little Endian is used for that here, mainly because it is better
-    /// optimised for x86 and ARM processors.
+    /// Generates a cryptographically secure pseudorandom `u16`
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
@@ -138,9 +139,7 @@ pub mod prelude {
     }
 
     
-    /// Generates a cryptographically secure pseudorandom `u32` by casting 4 random bytes as a `u32`,
-    /// combining their bytes. The little Endian is used for that here, mainly because it is better
-    /// optimised for x86 and ARM processors.
+    /// Generates a cryptographically secure pseudorandom `u32`
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
@@ -166,10 +165,7 @@ pub mod prelude {
         Ok(u32::from_le_bytes(buffer))
     }
 
-    /// Generates a cryptographically secure pseudorandom `u64` by casting 8 random bytes as a `u64`,
-    /// combining their bytes.
-    /// The little Endian is used for that here, mainly because it is better
-    /// optimised for x86 and ARM processors.
+    /// Generates a cryptographically secure pseudorandom `u64`
     ///
     /// Please note that this function needs a 64bit system for obvious reasons.
     ///
@@ -197,8 +193,7 @@ pub mod prelude {
         Ok(u64::from_le_bytes(buffer))
     }
 
-    /// Generates a cryptographically secure pseudorandom `i8` by casting a random byte as a `i8`. The little Endian is used for that here, mainly because it is better
-    /// optimised for x86 and ARM processors.
+    /// Generates a cryptographically secure pseudorandom `i8`
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
@@ -224,9 +219,7 @@ pub mod prelude {
         Ok(i8::from_le_bytes(buffer))
     }
 
-    /// Generates a cryptographically secure pseudorandom `i32` by casting 4 random bytes as a `i32`,
-    /// combining their bytes. The little Endian is used for that here, mainly because it is better
-    /// optimised for x86 and ARM processors.
+    /// Generates a cryptographically secure pseudorandom `i32` 
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
@@ -252,9 +245,7 @@ pub mod prelude {
         Ok(i32::from_le_bytes(buffer))
     }
 
-    /// Generates a cryptographically secure pseudorandom `f32` by casting 4 random bytes as a `f32`,
-    /// combining their bytes. The little Endian is used for that here, mainly because it is better
-    /// optimised for x86 and ARM processors.
+    /// Generates a cryptographically secure pseudorandom `f32`
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
@@ -285,12 +276,7 @@ pub mod prelude {
         }
     }
 
-    /// This generates a random character. Because I am mapping random noise as `utf8` characters,
-    /// some weird output is to be expected and will probably be needed to be sanatised. So while this does work, take care if you end up using
-    /// it. This is literally the most unsafe and non-standard way of doing things and really isn't
-    /// suited for all usecases.
-    ///
-    /// Consider using `random_latin_char` instead.
+    /// Unstable - Consider using `random_latin_char` instead.
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
@@ -327,19 +313,23 @@ pub mod prelude {
 
     /// Generates a random latin character, can be upper or lower case.
     ///
+    /// ## Arguments
+    ///
+    /// * `uppercase` - `true` for upper case, `false` for lower case
+    ///
     /// ## Example:
     /// ```
     /// use tyche::prelude::random_latin_char;
     ///
     /// fn main() {
-    ///   let random_char: char = random_latin_char().unwrap();
+    ///   let random_char: char = random_latin_char(true).unwrap();
     ///   println!("Generated random char: {}", random_char);
     /// }
     /// ```
-    pub fn random_latin_char() -> Result<char, Error> {
+    pub fn random_latin_char(uppercase: bool) -> Result<char, Error> {
         let chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
         let chosen_char = chars[random_index(chars.len())?];
-        if random_bool()? {
+        if uppercase {
             Ok(chosen_char.to_ascii_uppercase())
         } else {
             Ok(chosen_char)
@@ -442,8 +432,7 @@ pub mod prelude {
     }
 
     /// Call with the start and end of the range (both `f32`).
-    /// The range is inclusive on start, and never quite reaches end (At least it was never
-    /// observed during testing).
+    /// The range is inclusive on start, and never quite reaches end.
     /// 
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.

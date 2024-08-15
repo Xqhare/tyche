@@ -30,7 +30,7 @@ fn test_random_bool() {
 #[test]
 fn test_random_latin_char() {
     for _ in 0..1500000 {
-        let answ = random_latin_char();
+        let answ = random_latin_char(random_bool().unwrap());
         // println!("{:?}", answ);
         assert!(answ.is_ok());
         assert!(answ.unwrap().is_alphabetic());
