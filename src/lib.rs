@@ -42,15 +42,15 @@
 //!     let random_number_f32: f32 = random_f32().unwrap();
 //!     println!("Generated random f32: {}", random_number_f32);
 //!
-//!     let random_string: String = random_string(false).unwrap();
+//!     let random_string: String = random_string().unwrap();
 //!     println!("Generated random String: {}", random_string);
 //!
-//!     let random_latin_char: char = random_latin_char().unwrap();
+//!     let random_latin_char: char = random_latin_char(false).unwrap();
 //!     println!("Generated random latin char: {}", random_latin_char);
 //!
 //!     let random_bool: bool = random_bool().unwrap();
 //!     println!("Generated random bool: {}", random_bool);
-//! 
+//!
 //!     let chosen_element = random_from_range(0, 100).unwrap();
 //!     println!("Chosen element {chosen_element}, in range 0-100");
 //!
@@ -66,16 +66,13 @@
 //!     let collection = (0..100).collect::<Vec<usize>>();
 //!     let random_index = random_index(collection.len()).unwrap();
 //!     println!("Chosen index {}; Number at index {}", random_index, collection[random_index]);
-//! 
+//!
 //!     let random_ceiling = random_with_ceiling(100);
 //!     println!("The random number between 0 and 100 is: {}", random_ceiling.unwrap());
 //!
 //!     let random_floor = random_with_floor(0);
 //!     let max_usize = usize::MAX;
 //!     println!("The random number between 0 and {} is: {}", max_usize, random_floor.unwrap());
-//!
-//!     let random_bool = random_bool().unwrap();
-//!     println!("Random bool: {}", random_bool);
 //! }
 //! ```
 
@@ -84,9 +81,13 @@
 mod tests;
 
 pub mod prelude {
-    use std::{fs::File, io::{Error, ErrorKind, Read}, ops::{Add, Sub}};
+    use std::{
+        fs::File,
+        io::{Error, ErrorKind, Read},
+        ops::{Add, Sub},
+    };
 
-    /// Generates a cryptographically secure pseudorandom `u8`. 
+    /// Generates a cryptographically secure pseudorandom `u8`.
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
@@ -138,7 +139,6 @@ pub mod prelude {
         Ok(u16::from_le_bytes(buffer))
     }
 
-    
     /// Generates a cryptographically secure pseudorandom `u32`
     ///
     /// ## Errors
@@ -219,7 +219,7 @@ pub mod prelude {
         Ok(i8::from_le_bytes(buffer))
     }
 
-    /// Generates a cryptographically secure pseudorandom `i32` 
+    /// Generates a cryptographically secure pseudorandom `i32`
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
@@ -269,11 +269,7 @@ pub mod prelude {
         let mut buffer = [0u8; 4];
         rng.read_exact(&mut buffer)?;
         let out = f32::from_le_bytes(buffer);
-        if out.is_nan() {
-            random_f32()
-        } else {
-            Ok(out)
-        }
+        if out.is_nan() { random_f32() } else { Ok(out) }
     }
 
     /// Unstable - Consider using `random_latin_char` instead.
@@ -302,7 +298,10 @@ pub mod prelude {
         let mut out: String = Default::default();
         // This is probably the most black magic, unsafe and non standard way of doing
         // something I have ever done.
-        let black_magic: Vec<_> = buffer.bytes().map(|c| String::from_utf8(vec![c.unwrap()])).collect();
+        let black_magic: Vec<_> = buffer
+            .bytes()
+            .map(|c| String::from_utf8(vec![c.unwrap()]))
+            .collect();
         if let Some(entry) = black_magic.into_iter().flatten().next() {
             out.push_str(&entry);
         } else {
@@ -327,7 +326,10 @@ pub mod prelude {
     /// }
     /// ```
     pub fn random_latin_char(uppercase: bool) -> Result<char, Error> {
-        let chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+        let chars = [
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
+            'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+        ];
         let chosen_char = chars[random_index(chars.len())?];
         if uppercase {
             Ok(chosen_char.to_ascii_uppercase())
@@ -360,10 +362,10 @@ pub mod prelude {
             _ => Err(Error::new(ErrorKind::Other, "Failed to read random bool")),
         }
     }
-    
+
     /// Call with the start and end of the range (both `usize`).
     /// The range is inclusive on both ends.
-    /// 
+    ///
     /// Uses a 32bit seeded rng, for 64bit seeded rng please use `random_from_u64range`.
     ///
     /// ## Errors
@@ -392,13 +394,16 @@ pub mod prelude {
         } else if start == end {
             Ok(start)
         } else {
-            Err(Error::other(format!("Start '{}' is larger than end '{}'!", start, end)))
+            Err(Error::other(format!(
+                "Start '{}' is larger than end '{}'!",
+                start, end
+            )))
         }
     }
 
     /// Call with the start and end of the range (both `u64`).
     /// The range is inclusive on both ends.
-    /// 
+    ///
     /// Please note that this function needs a 64bit system for obvious reasons.
     ///
     /// ## Errors
@@ -427,13 +432,16 @@ pub mod prelude {
         } else if start == end {
             Ok(start)
         } else {
-            Err(Error::other(format!("Start '{}' is larger than end '{}'!", start, end)))
+            Err(Error::other(format!(
+                "Start '{}' is larger than end '{}'!",
+                start, end
+            )))
         }
     }
 
     /// Call with the start and end of the range (both `f32`).
     /// The range is inclusive on start, and never quite reaches end.
-    /// 
+    ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
@@ -458,25 +466,28 @@ pub mod prelude {
             // As further reading did not help in the slightes but confirm that floating point
             // numbers are weird I will have to live with it. It seems to grow towards end, and
             // never reaching it. I now suspect maths shinanigans.
-            let range_size = end.sub(start);//.add(1.0);
+            let range_size = end.sub(start); //.add(1.0);
             let rng = random_f32()?;
-                if rng.is_sign_positive() {
-                    let random_index = rng % range_size;
-                    Ok(start.add(random_index))
-                } else {
-                    let random_index = (rng * -1.0) % range_size;
-                    Ok(start.add(random_index))
-                }
+            if rng.is_sign_positive() {
+                let random_index = rng % range_size;
+                Ok(start.add(random_index))
+            } else {
+                let random_index = (rng * -1.0) % range_size;
+                Ok(start.add(random_index))
+            }
         } else if start == end {
             Ok(start)
         } else {
-            Err(Error::other(format!("Start '{}' is larger than end '{}'!", start, end)))
+            Err(Error::other(format!(
+                "Start '{}' is larger than end '{}'!",
+                start, end
+            )))
         }
     }
 
     /// Call with the start and end of the range (both `i32`).
     /// The range is inclusive on both ends.
-    /// 
+    ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
     /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
@@ -508,8 +519,10 @@ pub mod prelude {
         } else if start == end {
             Ok(start)
         } else {
-            Err(Error::other(format!("Start '{}' is larger than end '{}'!", start, end)))
-
+            Err(Error::other(format!(
+                "Start '{}' is larger than end '{}'!",
+                start, end
+            )))
         }
     }
 
@@ -538,7 +551,10 @@ pub mod prelude {
         if collection_length >= 1 {
             random_with_ceiling(collection_length.saturating_sub(1))
         } else {
-            Err(Error::other(format!("collection length '{}' is less than 1!", collection_length)))
+            Err(Error::other(format!(
+                "collection length '{}' is less than 1!",
+                collection_length
+            )))
         }
     }
 
@@ -595,4 +611,3 @@ pub mod prelude {
         random_from_range(floor, max_usize)
     }
 }
-
