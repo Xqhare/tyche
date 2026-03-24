@@ -3,7 +3,7 @@
 //! The name Tyche is inspired by the Greek goddess of fortune, Tyche (Τύχη). In Greek mythology, Tyche personified luck, fortune, and fate.
 //! Just like the goddess was often depicted blindfolded, emphasizing the impartiality of fate, Tyche the library strives to deliver unpredictable and unbiased random numbers.
 //!
-//! This project was tested and developed on linux, but should / could work on MacOS. Noone has tried yet.
+//! This project was tested and developed on linux, but should / could work on `MacOS`. Noone has tried yet.
 //!
 //! No windows support at the moment.
 //!
@@ -91,7 +91,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns:
@@ -117,7 +117,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -143,7 +143,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -171,7 +171,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -197,7 +197,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -223,7 +223,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -249,7 +249,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -276,7 +276,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -359,7 +359,7 @@ pub mod prelude {
             0 => Ok(false),
             1 => Ok(true),
             // Should never happen
-            _ => Err(Error::new(ErrorKind::Other, "Failed to read random bool")),
+            _ => Err(Error::other("Failed to read random bool")),
         }
     }
 
@@ -370,7 +370,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -395,8 +395,7 @@ pub mod prelude {
             Ok(start)
         } else {
             Err(Error::other(format!(
-                "Start '{}' is larger than end '{}'!",
-                start, end
+                "Start '{start}' is larger than end '{end}'!"
             )))
         }
     }
@@ -408,7 +407,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -433,8 +432,7 @@ pub mod prelude {
             Ok(start)
         } else {
             Err(Error::other(format!(
-                "Start '{}' is larger than end '{}'!",
-                start, end
+                "Start '{start}' is larger than end '{end}'!"
             )))
         }
     }
@@ -444,7 +442,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -472,15 +470,14 @@ pub mod prelude {
                 let random_index = rng % range_size;
                 Ok(start.add(random_index))
             } else {
-                let random_index = (rng * -1.0) % range_size;
+                let random_index = -rng % range_size;
                 Ok(start.add(random_index))
             }
         } else if start == end {
             Ok(start)
         } else {
             Err(Error::other(format!(
-                "Start '{}' is larger than end '{}'!",
-                start, end
+                "Start '{start}' is larger than end '{end}'!"
             )))
         }
     }
@@ -490,7 +487,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -520,8 +517,7 @@ pub mod prelude {
             Ok(start)
         } else {
             Err(Error::other(format!(
-                "Start '{}' is larger than end '{}'!",
-                start, end
+                "Start '{start}' is larger than end '{end}'!"
             )))
         }
     }
@@ -531,7 +527,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -552,8 +548,7 @@ pub mod prelude {
             random_with_ceiling(collection_length.saturating_sub(1))
         } else {
             Err(Error::other(format!(
-                "collection length '{}' is less than 1!",
-                collection_length
+                "collection length '{collection_length}' is less than 1!"
             )))
         }
     }
@@ -562,7 +557,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -588,7 +583,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.      
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
