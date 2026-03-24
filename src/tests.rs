@@ -8,7 +8,6 @@ fn test_random_str() {
         // println!("{:?}, len: {:?}", tmp, tmp.clone().unwrap().len());
         assert!(tmp.is_ok());
     }
-    
 }
 
 #[test]
@@ -21,7 +20,7 @@ fn test_random_bool() {
             // true == true
             assert!(answ.unwrap());
         } else {
-            // false == false 
+            // false == false
             assert!(!answ.unwrap());
         }
     }
@@ -40,19 +39,19 @@ fn test_random_latin_char() {
 #[test]
 fn test_random_i8() {
     for _ in 0..1500000 {
-            let answ = random_i8();
-            // println!("{:?}", answ);
-            assert!(answ.is_ok());
-        }
+        let answ = random_i8();
+        // println!("{:?}", answ);
+        assert!(answ.is_ok());
+    }
 }
 
 #[test]
 fn test_random_i32() {
     for _ in 0..1500000 {
-            let answ = random_i32();
-            // println!("{:?}", answ);
-            assert!(answ.is_ok());
-        }
+        let answ = random_i32();
+        // println!("{:?}", answ);
+        assert!(answ.is_ok());
+    }
 }
 
 #[test]
@@ -180,7 +179,7 @@ fn test_random_f32range() {
         //println!("{:?}", answ);
         if !found0_1 && answ == 0.1 {
             found0_1 = true;
-        } 
+        }
         if !found100_1 && answ > 100.09 {
             found100_1 = true;
         }
@@ -202,7 +201,7 @@ fn test_random_floor() {
 
 #[test]
 fn test_random_ceiling() {
-    for n in 1000000..2500000  {
+    for n in 1000000..2500000 {
         let answ = random_with_ceiling(n);
         // println!("The random number between 0 and {} is: {}", n, answ.unwrap());
         assert!(answ.is_ok());
