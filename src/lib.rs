@@ -83,7 +83,7 @@ mod tests;
 pub mod prelude {
     use std::{
         fs::File,
-        io::{Error, ErrorKind, Read},
+        io::{Error, Read},
         ops::{Add, Sub},
     };
 
@@ -91,7 +91,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\  
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns:
@@ -117,7 +117,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\  
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -143,7 +143,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\  
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -171,7 +171,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\  
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -197,7 +197,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\  
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -223,7 +223,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\  
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -249,7 +249,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\  
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -276,7 +276,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\  
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -370,7 +370,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\  
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -407,7 +407,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\  
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -442,7 +442,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\  
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -487,7 +487,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\  
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -527,7 +527,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\  
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -557,7 +557,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\  
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
@@ -583,7 +583,7 @@ pub mod prelude {
     ///
     /// ## Errors
     /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\    
+    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\  
     /// Or if the program cannot access `/dev/urandom`. This is most likely.
     ///
     /// ## Returns
