@@ -9,328 +9,135 @@
 //!
 //! ## Returns
 //!
-//! All functions return a `Result()`. This is because of the random number generator used on the backend. It can run out of entropy, something that is highly unlikely but possible, or the program can not open `/dev/urandom`. If you get a `Err()` back the second reason is the most likely candidate as I have not encountered one `Err()` value not caused by this or improper calling by supplying bad arguments. All `Error`'s are `std::io::Error` types.
-//!
-//! ## Function examples:
-//!
-//! For a detailed explanation of a function, please refer to it's dedicated documentation page.
-//!
-//! You can copy and run this code to see all functions of tyche in action!
-//!
-//! ```
-//! use tyche::prelude::*;
-//!
-//! fn main() {
-//!     let random_number_u8: u8 = random_u8().unwrap();
-//!     println!("Generated random u8: {}", random_number_u8);
-//!
-//!     let random_number_u16: u16 = random_u16().unwrap();
-//!     println!("Generated random u_u16: {}", random_number_u16);
-//!    
-//!     let random_number_u32: u32 = random_u32().unwrap();
-//!     println!("Generated random u_u32: {}", random_number_u32);
-//!     
-//!     let random_number_u64: u64 = random_u64().unwrap();
-//!     println!("Generated random u64: {}", random_number_u64);
-//!
-//!     let random_number_i8: i8 = random_i8().unwrap();
-//!     println!("Generated random i8: {}", random_number_i8);
-//!
-//!     let random_number_i32: i32 = random_i32().unwrap();
-//!     println!("Generated random i32: {}", random_number_i32);
-//!     
-//!     let random_number_f32: f32 = random_f32().unwrap();
-//!     println!("Generated random f32: {}", random_number_f32);
-//!
-//!     let random_string: String = random_string().unwrap();
-//!     println!("Generated random String: {}", random_string);
-//!
-//!     let random_latin_char: char = random_latin_char(false).unwrap();
-//!     println!("Generated random latin char: {}", random_latin_char);
-//!
-//!     let random_bool: bool = random_bool().unwrap();
-//!     println!("Generated random bool: {}", random_bool);
-//!
-//!     let chosen_element = random_from_range(0, 100).unwrap();
-//!     println!("Chosen element {chosen_element}, in range 0-100");
-//!
-//!     let chosen_element_u64 = random_from_u64range(0, 100).unwrap();
-//!     println!("Chosen element {chosen_element_u64}, in range 0-100");
-//!
-//!     let chosen_element_f32 = random_from_f32range(0.1, 100.1).unwrap();
-//!     println!("Chosen element {chosen_element_f32}, in range 0.1-100.1");
-//!
-//!     let chosen_element_i32 = random_from_i32range(-100, 100).unwrap();
-//!     println!("Chosen element {chosen_element_i32}, in range -100, 100");
-//!
-//!     let collection = (0..100).collect::<Vec<usize>>();
-//!     let random_index = random_index(collection.len()).unwrap();
-//!     println!("Chosen index {}; Number at index {}", random_index, collection[random_index]);
-//!
-//!     let random_ceiling = random_with_ceiling(100);
-//!     println!("The random number between 0 and 100 is: {}", random_ceiling.unwrap());
-//!
-//!     let random_floor = random_with_floor(0);
-//!     let max_usize = usize::MAX;
-//!     println!("The random number between 0 and {} is: {}", max_usize, random_floor.unwrap());
-//! }
-//! ```
+//! All functions return a `Result()`. This is because of the random number generator used on the backend. It can run out of entropy, something that is highly unlikely but possible, or the program can not open `/dev/urandom`. If you get a `Err()` back the second reason is the most likely candidate as I have not encountered one `Err()` value not caused by this or improper calling by supplying bad arguments.
 
 #![allow(clippy::needless_doctest_main)]
 #[cfg(test)]
 mod tests;
+#[cfg(test)]
+mod examples;
 
-pub mod prelude {
-    use std::{
-        fs::File,
-        io::{Error, Read},
-        ops::{Add, Sub},
-    };
+use athena::rng_api::{RngApi, RngError, RngResult};
+use std::fs::File;
+use std::io::{Error as IoError, Read};
+use std::ops::{Add, Sub};
 
-    /// Generates a cryptographically secure pseudorandom `u8`.
+/// A CSPRNG implementation using `/dev/urandom`.
+pub struct Tyche(File);
+
+impl Tyche {
+    /// Create a new Tyche instance.
     ///
     /// ## Errors
-    /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\\
-    /// Or if the program cannot access `/dev/urandom`. This is most likely.
-    ///
-    /// ## Returns:
-    /// Returns `Ok(u8)` otherwise.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_u8;
-    ///
-    /// fn main() {
-    ///   let random_number: u8 = random_u8().unwrap();
-    ///   println!("Generated random u8: {}", random_number);
-    /// }
-    /// ```
-    pub fn random_u8() -> Result<u8, Error> {
-        let mut rng = File::open("/dev/urandom")?;
+    /// Returns `IoError` if `/dev/urandom` cannot be opened.
+    pub fn new() -> Result<Self, IoError> {
+        Ok(Tyche(File::open("/dev/urandom")?))
+    }
+}
+
+impl RngApi for Tyche {
+    fn random_u8(&mut self) -> RngResult<u8> {
         let mut buffer = [0u8; 1];
-        rng.read_exact(&mut buffer)?;
+        self.0.read_exact(&mut buffer)?;
         Ok(buffer[0])
     }
 
-    /// Generates a cryptographically secure pseudorandom `u16`
-    ///
-    /// ## Errors
-    /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\\
-    /// Or if the program cannot access `/dev/urandom`. This is most likely.
-    ///
-    /// ## Returns
-    /// `Ok(u16)` with the random `u16` number.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_u16;
-    ///
-    /// fn main() {
-    ///   let random_number: u16 = random_u16().unwrap();
-    ///   println!("Generated random u16: {}", random_number);
-    /// }
-    /// ```
-    pub fn random_u16() -> Result<u16, Error> {
-        let mut rng = File::open("/dev/urandom")?;
+    fn random_u16(&mut self) -> RngResult<u16> {
         let mut buffer = [0u8; 2];
-        rng.read_exact(&mut buffer)?;
+        self.0.read_exact(&mut buffer)?;
         Ok(u16::from_le_bytes(buffer))
     }
 
-    /// Generates a cryptographically secure pseudorandom `u32`
-    ///
-    /// ## Errors
-    /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\\
-    /// Or if the program cannot access `/dev/urandom`. This is most likely.
-    ///
-    /// ## Returns
-    /// `Ok(u32)` with the random `u32` number.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_u32;
-    ///
-    /// fn main() {
-    ///   let random_number: u32 = random_u32().unwrap();
-    ///   println!("Generated random u32: {}", random_number);
-    /// }
-    /// ```
-    pub fn random_u32() -> Result<u32, Error> {
-        let mut rng = File::open("/dev/urandom")?;
+    fn random_u32(&mut self) -> RngResult<u32> {
         let mut buffer = [0u8; 4];
-        rng.read_exact(&mut buffer)?;
+        self.0.read_exact(&mut buffer)?;
         Ok(u32::from_le_bytes(buffer))
     }
 
-    /// Generates a cryptographically secure pseudorandom `u64`
-    ///
-    /// Please note that this function needs a 64bit system for obvious reasons.
-    ///
-    /// ## Errors
-    /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\\
-    /// Or if the program cannot access `/dev/urandom`. This is most likely.
-    ///
-    /// ## Returns
-    /// `Ok(u64)` with the random `u64` number.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_u64;
-    ///
-    /// fn main() {
-    ///   let random_number: u64 = random_u64().unwrap();
-    ///   println!("Generated random u64: {}", random_number);
-    /// }
-    /// ```
-    pub fn random_u64() -> Result<u64, Error> {
-        let mut rng = File::open("/dev/urandom")?;
+    fn random_u64(&mut self) -> RngResult<u64> {
         let mut buffer = [0u8; 8];
-        rng.read_exact(&mut buffer)?;
+        self.0.read_exact(&mut buffer)?;
         Ok(u64::from_le_bytes(buffer))
     }
 
-    /// Generates a cryptographically secure pseudorandom `i8`
-    ///
-    /// ## Errors
-    /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\\
-    /// Or if the program cannot access `/dev/urandom`. This is most likely.
-    ///
-    /// ## Returns
-    /// `Ok(i8)` with the random `i8` number.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_i8;
-    ///
-    /// fn main() {
-    ///   let random_number: i8 = random_i8().unwrap();
-    ///   println!("Generated random i8: {}", random_number);
-    /// }
-    /// ```
-    pub fn random_i8() -> Result<i8, Error> {
-        let mut rng = File::open("/dev/urandom")?;
+    fn random_usize(&mut self) -> RngResult<usize> {
+        #[cfg(target_pointer_width = "64")]
+        {
+            Ok(self.random_u64()? as usize)
+        }
+        #[cfg(target_pointer_width = "32")]
+        {
+            Ok(self.random_u32()? as usize)
+        }
+    }
+
+    fn random_i8(&mut self) -> RngResult<i8> {
         let mut buffer = [0u8; 1];
-        rng.read_exact(&mut buffer)?;
+        self.0.read_exact(&mut buffer)?;
         Ok(i8::from_le_bytes(buffer))
     }
 
-    /// Generates a cryptographically secure pseudorandom `i32`
-    ///
-    /// ## Errors
-    /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\\
-    /// Or if the program cannot access `/dev/urandom`. This is most likely.
-    ///
-    /// ## Returns
-    /// `Ok(i32)` with the random `i32` number.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_i32;
-    ///
-    /// fn main() {
-    ///   let random_number: i32 = random_i32().unwrap();
-    ///   println!("Generated random i32: {}", random_number);
-    /// }
-    /// ```
-    pub fn random_i32() -> Result<i32, Error> {
-        let mut rng = File::open("/dev/urandom")?;
+    fn random_i16(&mut self) -> RngResult<i16> {
+        let mut buffer = [0u8; 2];
+        self.0.read_exact(&mut buffer)?;
+        Ok(i16::from_le_bytes(buffer))
+    }
+
+    fn random_i32(&mut self) -> RngResult<i32> {
         let mut buffer = [0u8; 4];
-        rng.read_exact(&mut buffer)?;
+        self.0.read_exact(&mut buffer)?;
         Ok(i32::from_le_bytes(buffer))
     }
 
-    /// Generates a cryptographically secure pseudorandom `f32`
-    ///
-    /// ## Errors
-    /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\\
-    /// Or if the program cannot access `/dev/urandom`. This is most likely.
-    ///
-    /// ## Returns
-    /// `Ok(f32)` with the random `f32` number.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_f32;
-    ///
-    /// fn main() {
-    ///   let random_number: f32 = random_f32().unwrap();
-    ///   println!("Generated random f32: {}", random_number);
-    /// }
-    /// ```
-    pub fn random_f32() -> Result<f32, Error> {
-        let mut rng = File::open("/dev/urandom")?;
-        let mut buffer = [0u8; 4];
-        rng.read_exact(&mut buffer)?;
-        let out = f32::from_le_bytes(buffer);
-        if out.is_nan() { random_f32() } else { Ok(out) }
+    fn random_i64(&mut self) -> RngResult<i64> {
+        let mut buffer = [0u8; 8];
+        self.0.read_exact(&mut buffer)?;
+        Ok(i64::from_le_bytes(buffer))
     }
 
-    /// Unstable - Consider using `random_latin_char` instead.
-    ///
-    /// ## Errors
-    /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\\
-    /// Or if the program cannot access `/dev/urandom`. This is most likely.
-    ///
-    /// ## Returns
-    /// `Ok(String)` with the random `String`.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_string;
-    ///
-    /// fn main() {
-    ///   let random_string: String = random_string().unwrap();
-    ///   println!("Generated random String: {}", random_string);
-    /// }
-    /// ```
-    pub fn random_string() -> Result<String, Error> {
-        let mut rng = File::open("/dev/urandom")?;
-        let mut buffer = [0u8; 10];
-        rng.read_exact(&mut buffer)?;
-        let mut out: String = Default::default();
-        // This is probably the most black magic, unsafe and non standard way of doing
-        // something I have ever done.
-        let black_magic: Vec<_> = buffer
-            .bytes()
-            .map(|c| String::from_utf8(vec![c.unwrap()]))
-            .collect();
-        if let Some(entry) = black_magic.into_iter().flatten().next() {
-            out.push_str(&entry);
+    fn random_f32(&mut self) -> RngResult<f32> {
+        let mut buffer = [0u8; 4];
+        self.0.read_exact(&mut buffer)?;
+        let out = f32::from_le_bytes(buffer);
+        if out.is_nan() {
+            self.random_f32()
         } else {
-            return random_string();
+            Ok(out)
+        }
+    }
+
+    fn random_f64(&mut self) -> RngResult<f64> {
+        let mut buffer = [0u8; 8];
+        self.0.read_exact(&mut buffer)?;
+        let out = f64::from_le_bytes(buffer);
+        if out.is_nan() {
+            self.random_f64()
+        } else {
+            Ok(out)
+        }
+    }
+
+    fn random_bytes(&mut self, len: usize) -> RngResult<Vec<u8>> {
+        let mut buffer = vec![0u8; len];
+        self.0.read_exact(&mut buffer)?;
+        Ok(buffer)
+    }
+
+    fn random_string(&mut self, len: usize) -> RngResult<String> {
+        let mut out = String::with_capacity(len);
+        for _ in 0..len {
+            out.push(self.random_ascii_char()?);
         }
         Ok(out)
     }
 
-    /// Generates a random latin character, can be upper or lower case.
-    ///
-    /// ## Arguments
-    ///
-    /// * `uppercase` - `true` for upper case, `false` for lower case
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_latin_char;
-    ///
-    /// fn main() {
-    ///   let random_char: char = random_latin_char(true).unwrap();
-    ///   println!("Generated random char: {}", random_char);
-    /// }
-    /// ```
-    pub fn random_latin_char(uppercase: bool) -> Result<char, Error> {
+    fn random_latin_char(&mut self, uppercase: bool) -> RngResult<char> {
         let chars = [
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
             'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
         ];
-        let chosen_char = chars[random_index(chars.len())?];
+        let idx = self.random_index(chars.len())?;
+        let chosen_char = chars[idx];
         if uppercase {
             Ok(chosen_char.to_ascii_uppercase())
         } else {
@@ -338,271 +145,249 @@ pub mod prelude {
         }
     }
 
-    /// Generates a random boolean.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_bool;
-    ///
-    /// fn main() {
-    ///   let random_bool: bool = random_bool().unwrap();
-    ///   println!("Generated random bool: {}", random_bool);
-    /// }
-    /// ```
-    pub fn random_bool() -> Result<bool, Error> {
-        let mut rng = File::open("/dev/urandom")?;
-        let mut buffer = [0u8; 1];
-        rng.read_exact(&mut buffer)?;
-        // & == bitwise AND
-        let bit = buffer[0] & 1;
-        match bit {
-            0 => Ok(false),
-            1 => Ok(true),
-            // Should never happen
-            _ => Err(Error::other("Failed to read random bool")),
-        }
+    fn random_ascii_char(&mut self) -> RngResult<char> {
+        let val = self.random_from_range_inclusive(32, 126)?;
+        Ok(val as u8 as char)
     }
 
-    /// Call with the start and end of the range (both `usize`).
-    /// The range is inclusive on both ends.
-    ///
-    /// Uses a 32bit seeded rng, for 64bit seeded rng please use `random_from_u64range`.
-    ///
-    /// ## Errors
-    /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\\
-    /// Or if the program cannot access `/dev/urandom`. This is most likely.
-    ///
-    /// ## Returns
-    /// Will return `Ok(usize)` wrapping a number inside the given range.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_from_range;
-    ///
-    /// fn main() {
-    ///     let chosen_element = random_from_range(0, 100).unwrap();
-    ///     println!("Chosen element {chosen_element}, in range 0-100");
-    /// }
-    /// ```
-    pub fn random_from_range(start: usize, end: usize) -> Result<usize, Error> {
-        if start < end {
-            let range_size = (end).saturating_sub(start).saturating_add(1);
-            let rng = random_u32()?;
-            let random_index = rng as usize % range_size;
-            Ok(start.saturating_add(random_index))
-        } else if start == end {
-            Ok(start)
+    fn random_bool(&mut self) -> RngResult<bool> {
+        let b = self.random_u8()?;
+        Ok((b & 1) == 1)
+    }
+
+    fn random_from_range_inclusive(&mut self, min: usize, max: usize) -> RngResult<usize> {
+        if min < max {
+            let range_size = max.saturating_sub(min).saturating_add(1);
+            let rnd = self.random_usize()?;
+            Ok(min.saturating_add(rnd % range_size))
+        } else if min == max {
+            Ok(min)
         } else {
-            Err(Error::other(format!(
-                "Start '{start}' is larger than end '{end}'!"
+            Err(RngError::Generic(format!(
+                "Min '{min}' is larger than max '{max}'!"
             )))
         }
     }
 
-    /// Call with the start and end of the range (both `u64`).
-    /// The range is inclusive on both ends.
-    ///
-    /// Please note that this function needs a 64bit system for obvious reasons.
-    ///
-    /// ## Errors
-    /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\\
-    /// Or if the program cannot access `/dev/urandom`. This is most likely.
-    ///
-    /// ## Returns
-    /// Will return `Ok(u64)` wrapping a number inside the given range.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_from_u64range;
-    ///
-    /// fn main() {
-    ///     let chosen_element = random_from_u64range(0, 100).unwrap();
-    ///     println!("Chosen element {chosen_element}, in range 0-100");
-    /// }
-    /// ```
-    pub fn random_from_u64range(start: u64, end: u64) -> Result<u64, Error> {
-        if start < end {
-            let range_size = (end - start).saturating_add(1);
-            let rng = random_u64()?;
-            let random_index = rng % range_size;
-            Ok(start.saturating_add(random_index))
-        } else if start == end {
-            Ok(start)
+    fn random_from_range(&mut self, min: usize, max: usize) -> RngResult<usize> {
+        if min < max {
+            let range_size = max.saturating_sub(min);
+            let rnd = self.random_usize()?;
+            Ok(min.saturating_add(rnd % range_size))
+        } else if min == max {
+            Ok(min)
         } else {
-            Err(Error::other(format!(
-                "Start '{start}' is larger than end '{end}'!"
+            Err(RngError::Generic(format!(
+                "Min '{min}' is larger than max '{max}'!"
             )))
         }
     }
 
-    /// Call with the start and end of the range (both `f32`).
-    /// The range is inclusive on start, and never quite reaches end.
-    ///
-    /// ## Errors
-    /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\\
-    /// Or if the program cannot access `/dev/urandom`. This is most likely.
-    ///
-    /// ## Returns
-    /// Will return `Ok(f32)` wrapping a number inside the given range.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_from_f32range;
-    ///
-    /// fn main() {
-    ///     let chosen_element = random_from_f32range(0.1, 100.1).unwrap();
-    ///     println!("Chosen element {chosen_element}, in range 0.1-100.1");
-    /// }
-    /// ```
-    pub fn random_from_f32range(start: f32, end: f32) -> Result<f32, Error> {
-        if start < end {
-            // I still believe this to have an off by one error, however it is infinity small
-            // because of f32.
-            // As further reading did not help in the slightes but confirm that floating point
-            // numbers are weird I will have to live with it. It seems to grow towards end, and
-            // never reaching it. I now suspect maths shinanigans.
-            let range_size = end.sub(start); //.add(1.0);
-            let rng = random_f32()?;
-            if rng.is_sign_positive() {
-                let random_index = rng % range_size;
-                Ok(start.add(random_index))
-            } else {
-                let random_index = -rng % range_size;
-                Ok(start.add(random_index))
-            }
-        } else if start == end {
-            Ok(start)
+    fn random_from_u64_range(&mut self, min: u64, max: u64) -> RngResult<u64> {
+        if min < max {
+            let range_size = max.saturating_sub(min);
+            let rnd = self.random_u64()?;
+            Ok(min.saturating_add(rnd % range_size))
+        } else if min == max {
+            Ok(min)
         } else {
-            Err(Error::other(format!(
-                "Start '{start}' is larger than end '{end}'!"
+            Err(RngError::Generic(format!(
+                "Min '{min}' is larger than max '{max}'!"
             )))
         }
     }
 
-    /// Call with the start and end of the range (both `i32`).
-    /// The range is inclusive on both ends.
-    ///
-    /// ## Errors
-    /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\\
-    /// Or if the program cannot access `/dev/urandom`. This is most likely.
-    ///
-    /// ## Returns
-    /// Will return `Ok(i32)` wrapping a number inside the given range.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_from_i32range;
-    ///
-    /// fn main() {
-    ///     let chosen_element = random_from_i32range(-100, 100).unwrap();
-    ///     println!("Chosen element {chosen_element}, in range -100, 100");
-    /// }
-    /// ```
-    pub fn random_from_i32range(start: i32, end: i32) -> Result<i32, Error> {
-        if start < end {
-            let range_size = end.sub(start).add(1);
-            let rng = random_i32()?;
-            if rng.is_positive() {
-                let random_index = rng % range_size;
-                Ok(start.add(random_index))
-            } else {
-                let random_index = -rng % range_size;
-                Ok(start.add(random_index))
-            }
-        } else if start == end {
-            Ok(start)
+    fn random_from_i_range(&mut self, min: isize, max: isize) -> RngResult<isize> {
+        if min < max {
+            let range_size = (max - min) as usize;
+            let rnd = self.random_usize()?;
+            Ok(min + (rnd % range_size) as isize)
+        } else if min == max {
+            Ok(min)
         } else {
-            Err(Error::other(format!(
-                "Start '{start}' is larger than end '{end}'!"
+            Err(RngError::Generic(format!(
+                "Min '{min}' is larger than max '{max}'!"
             )))
         }
     }
 
-    /// Takes in the length of a collection, like a vector, and returns a valid, random, index for
-    /// it.
-    ///
-    /// ## Errors
-    /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\\
-    /// Or if the program cannot access `/dev/urandom`. This is most likely.
-    ///
-    /// ## Returns
-    /// `Ok(usize)` containing the index.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_index;
-    ///
-    /// fn main() {
-    ///    let collection = (0..100).collect::<Vec<usize>>();
-    ///    let random_index = random_index(collection.len()).unwrap();
-    ///    println!("Chosen index {}; Number at index {}", random_index, collection[random_index]);
-    /// }
-    /// ```
-    pub fn random_index(collection_length: usize) -> Result<usize, Error> {
+    fn random_from_i64_range(&mut self, min: i64, max: i64) -> RngResult<i64> {
+        if min < max {
+            let range_size = (max - min) as u64;
+            let rnd = self.random_u64()?;
+            Ok(min + (rnd % range_size) as i64)
+        } else if min == max {
+            Ok(min)
+        } else {
+            Err(RngError::Generic(format!(
+                "Min '{min}' is larger than max '{max}'!"
+            )))
+        }
+    }
+
+    fn random_from_i32_range(&mut self, min: i32, max: i32) -> RngResult<i32> {
+        if min < max {
+            let range_size = (max - min) as u32;
+            let rnd = self.random_u32()?;
+            Ok(min + (rnd % range_size) as i32)
+        } else if min == max {
+            Ok(min)
+        } else {
+            Err(RngError::Generic(format!(
+                "Min '{min}' is larger than max '{max}'!"
+            )))
+        }
+    }
+
+    fn random_from_f32_range(&mut self, min: f32, max: f32) -> RngResult<f32> {
+        if min < max {
+            let range_size = max.sub(min);
+            let rng = self.random_f32()?;
+            let random_index = rng.abs() % range_size;
+            Ok(min.add(random_index))
+        } else if min == max {
+            Ok(min)
+        } else {
+            Err(RngError::Generic(format!(
+                "Min '{min}' is larger than max '{max}'!"
+            )))
+        }
+    }
+
+    fn random_from_f64_range(&mut self, min: f64, max: f64) -> RngResult<f64> {
+        if min < max {
+            let range_size = max.sub(min);
+            let rng = self.random_f64()?;
+            let random_index = rng.abs() % range_size;
+            Ok(min.add(random_index))
+        } else if min == max {
+            Ok(min)
+        } else {
+            Err(RngError::Generic(format!(
+                "Min '{min}' is larger than max '{max}'!"
+            )))
+        }
+    }
+
+    fn random_index(&mut self, collection_length: usize) -> RngResult<usize> {
         if collection_length >= 1 {
-            random_with_ceiling(collection_length.saturating_sub(1))
+            self.random_with_ceiling(collection_length.saturating_sub(1))
         } else {
-            Err(Error::other(format!(
+            Err(RngError::Generic(format!(
                 "collection length '{collection_length}' is less than 1!"
             )))
         }
     }
 
-    /// Computes a random number between 0 and the `ceiling` argument.
-    ///
-    /// ## Errors
-    /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\\
-    /// Or if the program cannot access `/dev/urandom`. This is most likely.
-    ///
-    /// ## Returns
-    /// `Ok(usize)` containing the number.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_with_ceiling;
-    ///
-    /// fn main() {
-    ///    for n in 100000..200000  {
-    ///         let answ = random_with_ceiling(n);
-    ///         println!("The random number between 0 and {} is: {}", n, answ.unwrap());
-    ///    }
-    /// }
-    /// ```
-    pub fn random_with_ceiling(ceiling: usize) -> Result<usize, Error> {
-        let min_usize = usize::MIN;
-        random_from_range(min_usize, ceiling)
+    fn random_with_ceiling(&mut self, max: usize) -> RngResult<usize> {
+        self.random_from_range_inclusive(usize::MIN, max)
     }
 
-    /// Computes a random number between `usize::MAX` and the `floor` argument.
-    ///
-    /// ## Errors
-    /// All `Error`'s are `std::io::Error` types.
-    /// If if the CSPRNG has no entropy available. This is highly unlikely, but possible.\\\
-    /// Or if the program cannot access `/dev/urandom`. This is most likely.
-    ///
-    /// ## Returns
-    /// `Ok(usize)` containing the number.
-    ///
-    /// ## Example:
-    /// ```
-    /// use tyche::prelude::random_with_floor;
-    ///
-    /// fn main() {
-    ///    for n in 0..100000  {
-    ///         let answ = random_with_floor(n);
-    ///         let max_usize = usize::MAX;
-    ///         println!("The random number between {} and {} is: {}", max_usize, n, answ.unwrap());
-    ///    }
-    /// }
-    /// ```
-    pub fn random_with_floor(floor: usize) -> Result<usize, Error> {
-        let max_usize = usize::MAX;
-        random_from_range(floor, max_usize)
+    fn random_with_floor(&mut self, min: usize) -> RngResult<usize> {
+        self.random_from_range_inclusive(min, usize::MAX)
+    }
+}
+
+pub mod prelude {
+    use super::Tyche;
+    use athena::rng_api::{RngApi, RngError};
+    use std::io::Error as IoError;
+
+    fn to_io_error(e: RngError) -> IoError {
+        match e {
+            RngError::Io(io) => io,
+            RngError::Generic(s) => IoError::other(s),
+        }
+    }
+
+    pub fn random_u8() -> Result<u8, IoError> {
+        Tyche::new()?.random_u8().map_err(to_io_error)
+    }
+
+    pub fn random_u16() -> Result<u16, IoError> {
+        Tyche::new()?.random_u16().map_err(to_io_error)
+    }
+
+    pub fn random_u32() -> Result<u32, IoError> {
+        Tyche::new()?.random_u32().map_err(to_io_error)
+    }
+
+    pub fn random_u64() -> Result<u64, IoError> {
+        Tyche::new()?.random_u64().map_err(to_io_error)
+    }
+
+    pub fn random_i8() -> Result<i8, IoError> {
+        Tyche::new()?.random_i8().map_err(to_io_error)
+    }
+
+    pub fn random_i32() -> Result<i32, IoError> {
+        Tyche::new()?.random_i32().map_err(to_io_error)
+    }
+
+    pub fn random_f32() -> Result<f32, IoError> {
+        Tyche::new()?.random_f32().map_err(to_io_error)
+    }
+
+    pub fn random_string() -> Result<String, IoError> {
+        // Compatibility: the old random_string was weirdly specific,
+        // but let's just return a random string of length 10.
+        Tyche::new()?.random_string(10).map_err(to_io_error)
+    }
+
+    pub fn random_latin_char(uppercase: bool) -> Result<char, IoError> {
+        Tyche::new()?.random_latin_char(uppercase).map_err(to_io_error)
+    }
+
+    pub fn random_bool() -> Result<bool, IoError> {
+        Tyche::new()?.random_bool().map_err(to_io_error)
+    }
+
+    pub fn random_from_range(start: usize, end: usize) -> Result<usize, IoError> {
+        // The old implementation was inclusive on both ends for random_from_range
+        Tyche::new()?.random_from_range_inclusive(start, end).map_err(to_io_error)
+    }
+
+    pub fn random_from_u64range(start: u64, end: u64) -> Result<u64, IoError> {
+        // The old implementation was inclusive on both ends
+        let mut t = Tyche::new()?;
+        if start < end {
+            let range_size = end.saturating_sub(start).saturating_add(1);
+            let rnd = t.random_u64().map_err(to_io_error)?;
+            Ok(start.saturating_add(rnd % range_size))
+        } else if start == end {
+            Ok(start)
+        } else {
+            Err(IoError::other(format!("Start '{start}' is larger than end '{end}'!")))
+        }
+    }
+
+    pub fn random_from_f32range(start: f32, end: f32) -> Result<f32, IoError> {
+        Tyche::new()?.random_from_f32_range(start, end).map_err(to_io_error)
+    }
+
+    pub fn random_from_i32range(start: i32, end: i32) -> Result<i32, IoError> {
+        // The old implementation was inclusive on both ends
+        let mut t = Tyche::new()?;
+        if start < end {
+            let range_size = (end as i64 - start as i64 + 1) as u64;
+            let rnd = t.random_u32().map_err(to_io_error)? as u64;
+            Ok((start as i64 + (rnd % range_size) as i64) as i32)
+        } else if start == end {
+            Ok(start)
+        } else {
+            Err(IoError::other(format!("Start '{start}' is larger than end '{end}'!")))
+        }
+    }
+
+    pub fn random_index(collection_length: usize) -> Result<usize, IoError> {
+        Tyche::new()?.random_index(collection_length).map_err(to_io_error)
+    }
+
+    pub fn random_with_ceiling(ceiling: usize) -> Result<usize, IoError> {
+        Tyche::new()?.random_with_ceiling(ceiling).map_err(to_io_error)
+    }
+
+    pub fn random_with_floor(floor: usize) -> Result<usize, IoError> {
+        Tyche::new()?.random_with_floor(floor).map_err(to_io_error)
     }
 }
