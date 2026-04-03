@@ -8,4 +8,4 @@ authors = ["Xqhare"]
 
 [dependencies]
 
-athena = { path = "../athena", features = ["rng_api"] }
+athena = { git = "https://github.com/xqhare/athena.git", features = ["rng_api"] }
