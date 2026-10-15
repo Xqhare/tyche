@@ -13,11 +13,11 @@
 
 #![allow(clippy::needless_doctest_main)]
 #[cfg(test)]
-mod tests;
-#[cfg(test)]
 mod examples;
+#[cfg(test)]
+mod tests;
 
-use athena::rng_api::{RngApi, RngError, RngResult};
+pub use athena::rng_api::{RngApi, RngError, RngResult};
 use std::fs::File;
 use std::io::{Error as IoError, Read};
 use std::ops::{Add, Sub};
@@ -335,7 +335,9 @@ pub mod prelude {
     }
 
     pub fn random_latin_char(uppercase: bool) -> Result<char, IoError> {
-        Tyche::new()?.random_latin_char(uppercase).map_err(to_io_error)
+        Tyche::new()?
+            .random_latin_char(uppercase)
+            .map_err(to_io_error)
     }
 
     pub fn random_bool() -> Result<bool, IoError> {
@@ -344,7 +346,9 @@ pub mod prelude {
 
     pub fn random_from_range(start: usize, end: usize) -> Result<usize, IoError> {
         // The old implementation was inclusive on both ends for random_from_range
-        Tyche::new()?.random_from_range_inclusive(start, end).map_err(to_io_error)
+        Tyche::new()?
+            .random_from_range_inclusive(start, end)
+            .map_err(to_io_error)
     }
 
     pub fn random_from_u64range(start: u64, end: u64) -> Result<u64, IoError> {
@@ -357,12 +361,16 @@ pub mod prelude {
         } else if start == end {
             Ok(start)
         } else {
-            Err(IoError::other(format!("Start '{start}' is larger than end '{end}'!")))
+            Err(IoError::other(format!(
+                "Start '{start}' is larger than end '{end}'!"
+            )))
         }
     }
 
     pub fn random_from_f32range(start: f32, end: f32) -> Result<f32, IoError> {
-        Tyche::new()?.random_from_f32_range(start, end).map_err(to_io_error)
+        Tyche::new()?
+            .random_from_f32_range(start, end)
+            .map_err(to_io_error)
     }
 
     pub fn random_from_i32range(start: i32, end: i32) -> Result<i32, IoError> {
@@ -375,16 +383,22 @@ pub mod prelude {
         } else if start == end {
             Ok(start)
         } else {
-            Err(IoError::other(format!("Start '{start}' is larger than end '{end}'!")))
+            Err(IoError::other(format!(
+                "Start '{start}' is larger than end '{end}'!"
+            )))
         }
     }
 
     pub fn random_index(collection_length: usize) -> Result<usize, IoError> {
-        Tyche::new()?.random_index(collection_length).map_err(to_io_error)
+        Tyche::new()?
+            .random_index(collection_length)
+            .map_err(to_io_error)
     }
 
     pub fn random_with_ceiling(ceiling: usize) -> Result<usize, IoError> {
-        Tyche::new()?.random_with_ceiling(ceiling).map_err(to_io_error)
+        Tyche::new()?
+            .random_with_ceiling(ceiling)
+            .map_err(to_io_error)
     }
 
     pub fn random_with_floor(floor: usize) -> Result<usize, IoError> {
