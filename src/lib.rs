@@ -23,7 +23,10 @@ use std::io::{Error as IoError, Read};
 use std::ops::{Add, Sub};
 
 /// A CSPRNG implementation using `/dev/urandom`.
-pub struct Tyche(File);
+pub struct Tyche {
+    pool: [u8; 256],
+    idx: usize,
+}
 
 impl Tyche {
     /// Create a new Tyche instance.
@@ -31,32 +34,49 @@ impl Tyche {
     /// ## Errors
     /// Returns `IoError` if `/dev/urandom` cannot be opened.
     pub fn new() -> Result<Self, IoError> {
-        Ok(Tyche(File::open("/dev/urandom")?))
+        let mut pool = [0u8; 256];
+        let mut f = File::open("/dev/urandom")?;
+        f.read_exact(&mut pool)?;
+        Ok(Tyche { pool, idx: 0 })
+    }
+    pub(crate) fn adv_idx(&mut self) -> RngResult<()> {
+        let next_idx = self.idx.wrapping_add(1);
+        if next_idx >= self.pool.len() {
+            self.idx = 0;
+            self.regen_pool()?;
+        } else {
+            self.idx = next_idx;
+        }
+        Ok(())
+    }
+    fn regen_pool(&mut self) -> RngResult<()> {
+        let mut f = File::open("/dev/urandom")?;
+        let mut new_pool = [0u8; 256];
+        f.read_exact(&mut new_pool)?;
+        self.pool = new_pool;
+        Ok(())
     }
 }
 
 impl RngApi for Tyche {
     fn random_u8(&mut self) -> RngResult<u8> {
-        let mut buffer = [0u8; 1];
-        self.0.read_exact(&mut buffer)?;
-        Ok(buffer[0])
+        let out = self.pool[self.idx];
+        self.adv_idx()?;
+        Ok(out)
     }
 
     fn random_u16(&mut self) -> RngResult<u16> {
-        let mut buffer = [0u8; 2];
-        self.0.read_exact(&mut buffer)?;
+        let buffer = [self.random_u8()?; 2];
         Ok(u16::from_le_bytes(buffer))
     }
 
     fn random_u32(&mut self) -> RngResult<u32> {
-        let mut buffer = [0u8; 4];
-        self.0.read_exact(&mut buffer)?;
+        let buffer = [self.random_u8()?; 4];
         Ok(u32::from_le_bytes(buffer))
     }
 
     fn random_u64(&mut self) -> RngResult<u64> {
-        let mut buffer = [0u8; 8];
-        self.0.read_exact(&mut buffer)?;
+        let buffer = [self.random_u8()?; 8];
         Ok(u64::from_le_bytes(buffer))
     }
 
@@ -72,32 +92,27 @@ impl RngApi for Tyche {
     }
 
     fn random_i8(&mut self) -> RngResult<i8> {
-        let mut buffer = [0u8; 1];
-        self.0.read_exact(&mut buffer)?;
+        let buffer = [self.random_u8()?; 1];
         Ok(i8::from_le_bytes(buffer))
     }
 
     fn random_i16(&mut self) -> RngResult<i16> {
-        let mut buffer = [0u8; 2];
-        self.0.read_exact(&mut buffer)?;
+        let buffer = [self.random_u8()?; 2];
         Ok(i16::from_le_bytes(buffer))
     }
 
     fn random_i32(&mut self) -> RngResult<i32> {
-        let mut buffer = [0u8; 4];
-        self.0.read_exact(&mut buffer)?;
+        let buffer = [self.random_u8()?; 4];
         Ok(i32::from_le_bytes(buffer))
     }
 
     fn random_i64(&mut self) -> RngResult<i64> {
-        let mut buffer = [0u8; 8];
-        self.0.read_exact(&mut buffer)?;
+        let buffer = [self.random_u8()?; 8];
         Ok(i64::from_le_bytes(buffer))
     }
 
     fn random_f32(&mut self) -> RngResult<f32> {
-        let mut buffer = [0u8; 4];
-        self.0.read_exact(&mut buffer)?;
+        let buffer = [self.random_u8()?; 4];
         let out = f32::from_le_bytes(buffer);
         if out.is_nan() {
             self.random_f32()
@@ -107,8 +122,7 @@ impl RngApi for Tyche {
     }
 
     fn random_f64(&mut self) -> RngResult<f64> {
-        let mut buffer = [0u8; 8];
-        self.0.read_exact(&mut buffer)?;
+        let buffer = [self.random_u8()?; 8];
         let out = f64::from_le_bytes(buffer);
         if out.is_nan() {
             self.random_f64()
@@ -118,8 +132,7 @@ impl RngApi for Tyche {
     }
 
     fn random_bytes(&mut self, len: usize) -> RngResult<Vec<u8>> {
-        let mut buffer = vec![0u8; len];
-        self.0.read_exact(&mut buffer)?;
+        let buffer = vec![self.random_u8()?; len];
         Ok(buffer)
     }
 
