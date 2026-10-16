@@ -8,16 +8,14 @@ Tyche is not a replacement for a crate like [rand](https://crates.io/crates/rand
 
 Tyche is a lightweight wrapper around the inbuilt CSPRNG in UNIX systems, providing convenient access to it with `random_u8()` and converting the entropy into several useful data-types.
 
-This project was tested and developed on Linux, but should / could work on macOS. No one has tried yet though.
-
-No windows support at the moment.
+This project was tested and developed on Linux, but should work on macOS and windows.
 
 ## Features
 
-- Tested and developed on Linux only, could work on all UNIX systems like macOS, however.
-- Secure Randomness: Tyche utilizes cryptographically secure pseudo-random number generators (CSPRNGs) to ensure the generated randomness is unpredictable and statistically sound.
+- Tested and developed on Linux only, should work on all UNIX systems like macOS.
+- Windows is technically supported, but has not been tested. But the LLM says it should work, whatever that's worth to you.
+- Secure Randomness: Tyche utilizes cryptographically secure pseudo-random number generators (CSPRNGs) provided by the operating system to ensure the generated randomness is unpredictable and statistically sound.
 - Ease of Use: Tyche provides a user-friendly API with intuitive functions for generating random values of different data types.
-- Test driven development, meaning 100% test coverage, guaranteeing stability.
 - 0 dependencies, all code in one file making it easily auditable and understandable.
 - Fully documented with examples - more lines of documentation than lines of code!
 - Several generators, providing unsigned or signed integers, floating point numbers, or characters.

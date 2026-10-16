@@ -184,7 +184,9 @@ fn test_random_f32range() {
             found100_1 = true;
         }
         assert!(answ >= 0.1 && answ <= 100.1);
-        //tmpvec.push(answ.unwrap());
+        if found0_1 && found100_1 {
+            break;
+        }
     }
     //println!("{:?}", tmpvec.into_iter().reduce(f32::max).unwrap());
     assert!(found0_1 && found100_1);
@@ -224,6 +226,9 @@ fn test_random_index() {
             found0 = true;
         } else if random_index.unwrap() == 999 {
             found999 = true;
+        }
+        if found0 && found999 {
+            break;
         }
     }
     assert!(found0 && found999);
