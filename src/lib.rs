@@ -14,7 +14,7 @@ mod ffi {
 #[cfg(target_family = "unix")]
 use std::{fs::File, io::Read};
 
-pub use athena::rng_api::{RngApi, RngError, RngResult};
+pub use athena::traits::{RngApi, RngError, RngResult};
 use std::ops::{Add, Sub};
 
 /// A CSPRNG implementation using `/dev/urandom`.
@@ -349,7 +349,7 @@ impl RngApi for Tyche {
 
 pub mod prelude {
     use super::Tyche;
-    use athena::rng_api::{RngApi, RngError, RngResult};
+    use athena::traits::{RngApi, RngError, RngResult};
 
     pub fn random_u8() -> RngResult<u8> {
         Tyche::new()?.random_u8()
